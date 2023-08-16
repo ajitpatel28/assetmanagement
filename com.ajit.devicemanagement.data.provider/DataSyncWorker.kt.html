@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataSyncWorker.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DeviceViewModelTest (1) Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.ajit.devicemanagement.data.provider</a> &gt; <span class="el_source">DataSyncWorker.kt</span></div><h1>DataSyncWorker.kt</h1><pre class="source lang-java linenums">package com.ajit.devicemanagement.data.provider
+
+
+import com.ajit.devicemanagement.data.dao.DeviceDao
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import com.ajit.devicemanagement.data.AppDatabase
+import com.ajit.devicemanagement.data.model.Change
+import com.ajit.devicemanagement.data.repository.FirestoreRepository
+import com.ajit.devicemanagement.data.model.RoomDevice
+import com.ajit.devicemanagement.ui.auth.LoginFragment
+import com.ajit.devicemanagement.util.Operation
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+import kotlinx.coroutines.*
+import kotlin.coroutines.resume
+
+@ExperimentalCoroutinesApi
+@HiltWorker
+<span class="nc" id="L24">class DataSyncWorker @AssistedInject constructor(</span>
+    @Assisted context: Context,
+    @Assisted workerParams: WorkerParameters) :
+<span class="nc" id="L27">    CoroutineWorker(context, workerParams) {</span>
+
+<span class="nc" id="L29">    private val deviceDao: DeviceDao by lazy {</span>
+<span class="nc" id="L30">        AppDatabase.getDatabase(context).deviceDao()</span>
+    }
+
+<span class="nc" id="L33">    private var dataSyncManager: DataSyncManager = DataSyncManager(context)</span>
+
+<span class="nc" id="L35">    private val firestoreRepository = FirestoreRepository()</span>
+
+<span class="nc" id="L37">    private val currentUser = LoginFragment.UserSession.loggedInUser</span>
+
+    override suspend fun doWork(): Result {
+<span class="nc" id="L40">        Log.d(&quot;DataSyncWorker&quot;, &quot;Starting data synchronization&quot;)</span>
+
+//        val devices = createDummyDevices(100) // Create 20 dummy devices
+//        for (device in devices) {
+//            firestoreRepository.addDevice(device) { success -&gt;
+//                if (success) {
+//                    Log.d(&quot;MyWorker&quot;, &quot;Device added successfully&quot;)
+//                } else {
+//                    Log.e(&quot;MyWorker&quot;, &quot;Failed to add device&quot;)
+//                }
+//            }
+//        }
+<span class="nc" id="L52">        return withContext(Dispatchers.IO) {</span>
+<span class="nc" id="L53">            try {</span>
+<span class="nc" id="L54">                syncDevices()</span>
+<span class="nc" id="L55">                Result.success()</span>
+<span class="nc" id="L56">        } catch (e: Exception) {</span>
+<span class="nc" id="L57">            Log.e(&quot;DataSyncWorker&quot;, &quot;Data synchronization failed&quot;, e)</span>
+<span class="nc" id="L58">            Result.failure()</span>
+        }
+        }
+    }
+
+
+
+//    private fun createDummyDevices(count: Int): List&lt;RoomDevice&gt; {
+//        val dummyDevices = mutableListOf&lt;RoomDevice&gt;()
+//
+//        for (i in 1..count) {
+//            val deviceId = &quot;Device_$i&quot;
+//            val deviceType = &quot;Mobile&quot;
+//            val deviceName = &quot;Device Name $i&quot;
+//            val model = &quot;Model $i&quot;
+//            val manufacturer = &quot;Manufacturer $i&quot;
+//            val identificationId = &quot;ID_$i&quot;
+//            val otherDetails = &quot;Other details $i&quot;
+//            val date = System.currentTimeMillis()
+//
+//            val device = RoomDevice(
+//                deviceId = deviceId,
+//                employeeId = currentUser?.employeeId.toString(),
+//                deviceType = deviceType,
+//                deviceName = deviceName,
+//                model = model,
+//                manufacturer = manufacturer,
+//                identificationId = identificationId,
+//                otherDetails = otherDetails,
+//                date = date
+//            )
+//
+//            dummyDevices.add(device)
+//        }
+//
+//        return dummyDevices
+//    }
+
+    private suspend fun syncDevices() {
+<span class="nc" id="L97">        coroutineScope {</span>
+<span class="nc" id="L98">            Log.d(&quot;DataSyncWorker&quot;, &quot;Sync devices called&quot;)</span>
+
+<span class="nc" id="L100">            val pendingChanges = getPendingChangesFromContentProvider()</span>
+<span class="nc" id="L101">            Log.e(&quot;DataSyncWorker&quot;, &quot;pending changess called $pendingChanges&quot;)</span>
+
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            if (pendingChanges.isEmpty()) {</span>
+<span class="nc" id="L104">                initialSync()</span>
+
+            }
+            else {
+
+<span class="nc" id="L109">                pendingChanges.forEach { change -&gt;</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">                    when (change.operation) {</span>
+<span class="nc" id="L111">                        Operation.INSERT -&gt; launch { syncInsertOperation(change) }</span>
+<span class="nc" id="L112">                        Operation.UPDATE -&gt; launch { syncUpdateOperation(change) }</span>
+<span class="nc" id="L113">                        Operation.DELETE -&gt; launch { syncDeleteOperation(change) }</span>
+                    }
+<span class="nc" id="L115">                        dataSyncManager.stopSync()</span>
+
+<span class="nc" id="L117">                }</span>
+            }
+<span class="nc" id="L119">        }</span>
+<span class="nc" id="L120">    }</span>
+
+
+
+    private suspend fun fetchDevicesFromFirestore(): List&lt;RoomDevice&gt; {
+<span class="nc" id="L125">        return suspendCancellableCoroutine { continuation -&gt;</span>
+<span class="nc" id="L126">            firestoreRepository.fetchDevicesFromFirestore { devices -&gt;</span>
+<span class="nc" id="L127">                continuation.resume(devices) // Resume the coroutine with the fetched devices</span>
+<span class="nc" id="L128">            }</span>
+<span class="nc" id="L129">        }</span>
+    }
+
+
+    private suspend fun syncInsertOperation(change: Change) {
+<span class="nc" id="L134">        val device = change.device</span>
+<span class="nc" id="L135">        Log.e(&quot;SyncWorker&quot;, &quot;instering device $device&quot;)</span>
+
+<span class="nc" id="L137">        try {</span>
+<span class="nc" id="L138">            val success = suspendCancellableCoroutine { continuation -&gt;</span>
+<span class="nc" id="L139">                firestoreRepository.addDevice(device) { success -&gt;</span>
+<span class="nc" id="L140">                    continuation.resume(success) {</span>
+<span class="nc" id="L141">                    }</span>
+<span class="nc" id="L142">                }</span>
+<span class="nc" id="L143">            }</span>
+
+<span class="nc bnc" id="L145" title="All 2 branches missed.">            if (success) {</span>
+<span class="nc" id="L146">                withContext(Dispatchers.IO) {</span>
+<span class="nc" id="L147">                    deleteSyncedChange(change)</span>
+<span class="nc" id="L148">                }</span>
+            } else {
+<span class="nc" id="L150">                Log.e(&quot;DataSyncWorker&quot;, &quot;Failed to add device to Firestore: $device&quot;)</span>
+
+            }
+<span class="nc" id="L153">        } catch (e: Exception) {</span>
+<span class="nc" id="L154">            Log.e(&quot;DataSyncWorker&quot;, &quot;Exception occurred during device addition: ${e.message}&quot;)</span>
+
+        }
+<span class="nc" id="L157">    }</span>
+
+
+    private suspend fun syncUpdateOperation(change: Change) {
+<span class="nc" id="L161">        val device = change.device</span>
+<span class="nc" id="L162">        Log.e(&quot;DataSyncWorker&quot;, &quot;Sync Update called, $device&quot;)</span>
+
+
+<span class="nc" id="L165">        try {</span>
+<span class="nc" id="L166">            val success = suspendCancellableCoroutine { continuation -&gt;</span>
+<span class="nc" id="L167">                firestoreRepository.updateDevice(device) { success -&gt;</span>
+<span class="nc" id="L168">                    continuation.resume(success) {</span>
+<span class="nc" id="L169">                    }</span>
+<span class="nc" id="L170">                }</span>
+<span class="nc" id="L171">            }</span>
+
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            if (success) {</span>
+<span class="nc" id="L174">                withContext(Dispatchers.IO) {</span>
+<span class="nc" id="L175">                    deleteSyncedChange(change)</span>
+<span class="nc" id="L176">                }</span>
+            } else {
+
+<span class="nc" id="L179">                Log.e(&quot;DataSyncWorker&quot;, &quot;Failed to update device in Firestore: $device&quot;)</span>
+
+            }
+<span class="nc" id="L182">        } catch (e: Exception) {</span>
+        }
+<span class="nc" id="L184">    }</span>
+
+    private suspend fun syncDeleteOperation(change: Change) {
+<span class="nc" id="L187">        val device = change.device</span>
+<span class="nc" id="L188">        Log.e(&quot;DataSyncWorker&quot;, &quot;Sync delete called $device&quot;)</span>
+
+<span class="nc" id="L190">        try {</span>
+<span class="nc" id="L191">            val success = suspendCancellableCoroutine { continuation -&gt;</span>
+<span class="nc" id="L192">                firestoreRepository.deleteDevice(device.deviceId) { success -&gt;</span>
+<span class="nc" id="L193">                    continuation.resume(success) {</span>
+<span class="nc" id="L194">                        // Handle cancellation if needed</span>
+                    }
+<span class="nc" id="L196">                }</span>
+<span class="nc" id="L197">            }</span>
+
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            if (success) {</span>
+<span class="nc" id="L200">                withContext(Dispatchers.IO) {</span>
+<span class="nc" id="L201">                    deleteSyncedChange(change)</span>
+<span class="nc" id="L202">                }</span>
+            } else {
+                // Handle device addition failure to Firestore
+            }
+<span class="nc" id="L206">        } catch (e: Exception) {</span>
+            // Handle any other exceptions
+        }
+<span class="nc" id="L209">    }</span>
+
+
+    private suspend fun getPendingChangesFromContentProvider(): List&lt;Change&gt; {
+<span class="nc bnc" id="L213" title="All 2 branches missed.">        return withContext(Dispatchers.IO) {</span>
+<span class="nc" id="L214">            val contentResolver = applicationContext.contentResolver</span>
+<span class="nc" id="L215">            val uri =</span>
+<span class="nc" id="L216">                Uri.parse(&quot;content://com.ajit.devicemanagement.data.provider.DeviceContentProvider/pending_changes&quot;)</span>
+<span class="nc" id="L217">            val projection = arrayOf(</span>
+<span class="nc" id="L218">                &quot;change_id&quot;,</span>
+<span class="nc" id="L219">                &quot;operation&quot;,</span>
+<span class="nc" id="L220">                &quot;device_id&quot;,</span>
+<span class="nc" id="L221">                &quot;identification_id&quot;,</span>
+<span class="nc" id="L222">                &quot;device_type&quot;,</span>
+<span class="nc" id="L223">                &quot;device_name&quot;,</span>
+<span class="nc" id="L224">                &quot;model&quot;,</span>
+<span class="nc" id="L225">                &quot;manufacturer&quot;,</span>
+<span class="nc" id="L226">                &quot;os&quot;,</span>
+<span class="nc" id="L227">                &quot;other_details&quot;,</span>
+<span class="nc" id="L228">                &quot;date&quot;,</span>
+<span class="nc" id="L229">                &quot;last_modified&quot;,</span>
+            )
+<span class="nc" id="L231">            val cursor = contentResolver.query(uri, projection, null, null, null)</span>
+<span class="nc" id="L232">            val changes = mutableListOf&lt;Change&gt;()</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">            cursor?.use { cursor -&gt;</span>
+<span class="nc" id="L234">                Log.d(&quot;DataSyncWorker&quot;, &quot;Number of rows in cursor: ${cursor.count}&quot;)</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">                while (cursor.moveToNext()) {</span>
+<span class="nc" id="L236">                    val change = Change.fromCursor(cursor)</span>
+<span class="nc" id="L237">                    changes.add(change)</span>
+                }
+<span class="nc" id="L239">            }</span>
+
+<span class="nc" id="L241">            changes</span>
+        }
+    }
+
+
+    private suspend fun deleteSyncedChange(change: Change) {
+<span class="nc" id="L247">        Log.e(&quot;SyncWorker&quot;, &quot;deleting $change&quot;)</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">        withContext(Dispatchers.IO) {</span>
+<span class="nc" id="L249">            val contentResolver = applicationContext.contentResolver</span>
+<span class="nc" id="L250">            val uri =</span>
+<span class="nc" id="L251">                Uri.parse(&quot;content://com.ajit.devicemanagement.data.provider.DeviceContentProvider/pending_changes/${change.id}&quot;)</span>
+<span class="nc" id="L252">            val selectionArgs = arrayOf(change.id.toString()) // Provide the selection arguments</span>
+<span class="nc" id="L253">            val rowsDeleted = contentResolver.delete(uri, null, selectionArgs)</span>
+<span class="nc" id="L254">            Log.d(&quot;SyncWorker&quot;, &quot;uri $uri&quot;)</span>
+<span class="nc" id="L255">            Log.d(&quot;SyncWorker&quot;, &quot;Number of rows deleted: $rowsDeleted&quot;)</span>
+        }
+<span class="nc" id="L257">    }</span>
+
+
+
+<span class="nc" id="L261">    private suspend fun initialSync() {</span>
+        // Delete all existing devices from the devices table in Room
+
+<span class="nc" id="L264">        val devicesFromFirestore = fetchDevicesFromFirestore()</span>
+<span class="nc" id="L265">        Log.e(&quot;DataSyncWorker&quot;,&quot; initial sync devices  to be added $devicesFromFirestore&quot;)</span>
+
+<span class="nc" id="L267">        deleteAllDevicesFromRoom()</span>
+
+<span class="nc bnc" id="L269" title="All 4 branches missed.">        if (devicesFromFirestore.isNotEmpty()) {</span>
+            // Add devices from Firestore to the devices table in Room
+<span class="nc" id="L271">            addDevicesToRoom(devicesFromFirestore)</span>
+        }
+
+<span class="nc" id="L274">        dataSyncManager.stopSync()</span>
+<span class="nc" id="L275">    }</span>
+
+
+
+
+    private suspend fun deleteAllDevicesFromRoom() {
+<span class="nc" id="L281">        withContext(Dispatchers.IO) {</span>
+<span class="nc" id="L282">            deviceDao.deleteAllDevices()</span>
+<span class="nc" id="L283">        }</span>
+<span class="nc" id="L284">    }</span>
+
+
+    private suspend fun addDevicesToRoom(devices: List&lt;RoomDevice&gt;) {
+<span class="nc" id="L288">        withContext(Dispatchers.IO) {</span>
+<span class="nc" id="L289">            devices.forEach {</span>
+<span class="nc" id="L290">                Log.e(&quot;DataSyncWorker&quot;,&quot; adding devices  to be room $it&quot;)</span>
+<span class="nc" id="L291">                deviceDao.addDevice(it)</span>
+<span class="nc" id="L292">            }</span>
+<span class="nc" id="L293">        }</span>
+<span class="nc" id="L294">    }</span>
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

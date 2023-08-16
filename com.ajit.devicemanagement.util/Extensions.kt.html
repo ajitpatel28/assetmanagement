@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Extensions.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DeviceViewModelTest (1) Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.ajit.devicemanagement.util</a> &gt; <span class="el_source">Extensions.kt</span></div><h1>Extensions.kt</h1><pre class="source lang-java linenums">package com.ajit.devicemanagement.util
+
+import android.R
+import android.app.Dialog
+import android.content.Context
+import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.*
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.google.android.material.snackbar.Snackbar
+
+fun View.hide() {
+<span class="nc" id="L16">    visibility = View.GONE</span>
+<span class="nc" id="L17">}</span>
+
+fun View.show() {
+<span class="nc" id="L20">    visibility = View.VISIBLE</span>
+<span class="nc" id="L21">}</span>
+
+fun View.disable() {
+<span class="nc" id="L24">    isEnabled = false</span>
+<span class="nc" id="L25">}</span>
+
+fun View.enabled() {
+<span class="nc" id="L28">    isEnabled = true</span>
+<span class="nc" id="L29">}</span>
+
+fun Fragment.toast(msg: String?) {
+<span class="nc" id="L32">    Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()</span>
+<span class="nc" id="L33">}</span>
+
+
+fun Context.createDialog(layout: Int, cancelable: Boolean): Dialog {
+<span class="nc" id="L37">    val dialog = Dialog(this, R.style.Theme_Dialog)</span>
+<span class="nc" id="L38">    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)</span>
+<span class="nc" id="L39">    dialog.setContentView(layout)</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    dialog.window?.setGravity(Gravity.CENTER)</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">    dialog.window?.setLayout(</span>
+<span class="nc" id="L42">        WindowManager.LayoutParams.MATCH_PARENT,</span>
+<span class="nc" id="L43">        WindowManager.LayoutParams.WRAP_CONTENT</span>
+    )
+<span class="nc" id="L45">    dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))</span>
+<span class="nc" id="L46">    dialog.setCancelable(cancelable)</span>
+<span class="nc" id="L47">    return dialog</span>
+}
+
+val Int.dpToPx: Int
+<span class="nc" id="L51">    get() = (this * Resources.getSystem().displayMetrics.density).toInt()</span>
+
+val Int.pxToDp: Int
+<span class="nc" id="L54">    get() = (this / Resources.getSystem().displayMetrics.density).toInt()</span>
+
+fun String.isValidEmail() =
+<span class="nc bnc" id="L57" title="All 6 branches missed.">    isNotEmpty() &amp;&amp; android.util.Patterns.EMAIL_ADDRESS.matcher(this).matches()</span>
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

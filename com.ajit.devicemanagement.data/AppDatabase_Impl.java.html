@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppDatabase_Impl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DeviceViewModelTest (1) Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.ajit.devicemanagement.data</a> &gt; <span class="el_source">AppDatabase_Impl.java</span></div><h1>AppDatabase_Impl.java</h1><pre class="source lang-java linenums">package com.ajit.devicemanagement.data;
+
+import androidx.annotation.NonNull;
+import androidx.room.DatabaseConfiguration;
+import androidx.room.InvalidationTracker;
+import androidx.room.RoomOpenHelper;
+import androidx.room.RoomOpenHelper.Delegate;
+import androidx.room.RoomOpenHelper.ValidationResult;
+import androidx.room.migration.AutoMigrationSpec;
+import androidx.room.migration.Migration;
+import androidx.room.util.DBUtil;
+import androidx.room.util.TableInfo;
+import androidx.room.util.TableInfo.Column;
+import androidx.room.util.TableInfo.ForeignKey;
+import androidx.room.util.TableInfo.Index;
+import androidx.sqlite.db.SupportSQLiteDatabase;
+import androidx.sqlite.db.SupportSQLiteOpenHelper;
+import androidx.sqlite.db.SupportSQLiteOpenHelper.Callback;
+import androidx.sqlite.db.SupportSQLiteOpenHelper.Configuration;
+import com.ajit.devicemanagement.data.dao.DeviceDao;
+import com.ajit.devicemanagement.data.dao.DeviceDao_Impl;
+import java.lang.Class;
+import java.lang.Override;
+import java.lang.String;
+import java.lang.SuppressWarnings;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+@SuppressWarnings({&quot;unchecked&quot;, &quot;deprecation&quot;})
+<span class="nc" id="L34">public final class AppDatabase_Impl extends AppDatabase {</span>
+  private volatile DeviceDao _deviceDao;
+
+  @Override
+  protected SupportSQLiteOpenHelper createOpenHelper(DatabaseConfiguration configuration) {
+<span class="nc" id="L39">    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(configuration, new RoomOpenHelper.Delegate(1) {</span>
+      @Override
+      public void createAllTables(SupportSQLiteDatabase _db) {
+<span class="nc" id="L42">        _db.execSQL(&quot;CREATE TABLE IF NOT EXISTS `devices` (`device_id` TEXT NOT NULL, `employee_id` TEXT NOT NULL, `device_type` TEXT NOT NULL, `device_name` TEXT NOT NULL, `model` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `identification_id` TEXT NOT NULL, `other_details` TEXT NOT NULL, `date` INTEGER NOT NULL, `last_modified` INTEGER NOT NULL, PRIMARY KEY(`device_id`))&quot;);</span>
+<span class="nc" id="L43">        _db.execSQL(&quot;CREATE TABLE IF NOT EXISTS `pending_changes` (`change_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `operation` TEXT NOT NULL, `device_id` TEXT NOT NULL, `employee_id` TEXT NOT NULL, `device_type` TEXT NOT NULL, `device_name` TEXT NOT NULL, `model` TEXT NOT NULL, `manufacturer` TEXT NOT NULL, `identification_id` TEXT NOT NULL, `other_details` TEXT NOT NULL, `date` INTEGER NOT NULL, `last_modified` INTEGER NOT NULL)&quot;);</span>
+<span class="nc" id="L44">        _db.execSQL(&quot;CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)&quot;);</span>
+<span class="nc" id="L45">        _db.execSQL(&quot;INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b0feb02c6cf2d47c33e3d2acf1f90386')&quot;);</span>
+<span class="nc" id="L46">      }</span>
+
+      @Override
+      public void dropAllTables(SupportSQLiteDatabase _db) {
+<span class="nc" id="L50">        _db.execSQL(&quot;DROP TABLE IF EXISTS `devices`&quot;);</span>
+<span class="nc" id="L51">        _db.execSQL(&quot;DROP TABLE IF EXISTS `pending_changes`&quot;);</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (mCallbacks != null) {</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">          for (int _i = 0, _size = mCallbacks.size(); _i &lt; _size; _i++) {</span>
+<span class="nc" id="L54">            mCallbacks.get(_i).onDestructiveMigration(_db);</span>
+          }
+        }
+<span class="nc" id="L57">      }</span>
+
+      @Override
+      public void onCreate(SupportSQLiteDatabase _db) {
+<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (mCallbacks != null) {</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">          for (int _i = 0, _size = mCallbacks.size(); _i &lt; _size; _i++) {</span>
+<span class="nc" id="L63">            mCallbacks.get(_i).onCreate(_db);</span>
+          }
+        }
+<span class="nc" id="L66">      }</span>
+
+      @Override
+      public void onOpen(SupportSQLiteDatabase _db) {
+<span class="nc" id="L70">        mDatabase = _db;</span>
+<span class="nc" id="L71">        internalInitInvalidationTracker(_db);</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (mCallbacks != null) {</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">          for (int _i = 0, _size = mCallbacks.size(); _i &lt; _size; _i++) {</span>
+<span class="nc" id="L74">            mCallbacks.get(_i).onOpen(_db);</span>
+          }
+        }
+<span class="nc" id="L77">      }</span>
+
+      @Override
+      public void onPreMigrate(SupportSQLiteDatabase _db) {
+<span class="nc" id="L81">        DBUtil.dropFtsSyncTriggers(_db);</span>
+<span class="nc" id="L82">      }</span>
+
+      @Override
+      public void onPostMigrate(SupportSQLiteDatabase _db) {
+<span class="nc" id="L86">      }</span>
+
+      @Override
+      public RoomOpenHelper.ValidationResult onValidateSchema(SupportSQLiteDatabase _db) {
+<span class="nc" id="L90">        final HashMap&lt;String, TableInfo.Column&gt; _columnsDevices = new HashMap&lt;String, TableInfo.Column&gt;(10);</span>
+<span class="nc" id="L91">        _columnsDevices.put(&quot;device_id&quot;, new TableInfo.Column(&quot;device_id&quot;, &quot;TEXT&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L92">        _columnsDevices.put(&quot;employee_id&quot;, new TableInfo.Column(&quot;employee_id&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L93">        _columnsDevices.put(&quot;device_type&quot;, new TableInfo.Column(&quot;device_type&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L94">        _columnsDevices.put(&quot;device_name&quot;, new TableInfo.Column(&quot;device_name&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L95">        _columnsDevices.put(&quot;model&quot;, new TableInfo.Column(&quot;model&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L96">        _columnsDevices.put(&quot;manufacturer&quot;, new TableInfo.Column(&quot;manufacturer&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L97">        _columnsDevices.put(&quot;identification_id&quot;, new TableInfo.Column(&quot;identification_id&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L98">        _columnsDevices.put(&quot;other_details&quot;, new TableInfo.Column(&quot;other_details&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L99">        _columnsDevices.put(&quot;date&quot;, new TableInfo.Column(&quot;date&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L100">        _columnsDevices.put(&quot;last_modified&quot;, new TableInfo.Column(&quot;last_modified&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L101">        final HashSet&lt;TableInfo.ForeignKey&gt; _foreignKeysDevices = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L102">        final HashSet&lt;TableInfo.Index&gt; _indicesDevices = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L103">        final TableInfo _infoDevices = new TableInfo(&quot;devices&quot;, _columnsDevices, _foreignKeysDevices, _indicesDevices);</span>
+<span class="nc" id="L104">        final TableInfo _existingDevices = TableInfo.read(_db, &quot;devices&quot;);</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (! _infoDevices.equals(_existingDevices)) {</span>
+<span class="nc" id="L106">          return new RoomOpenHelper.ValidationResult(false, &quot;devices(com.ajit.devicemanagement.data.model.RoomDevice).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoDevices + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingDevices);
+        }
+<span class="nc" id="L110">        final HashMap&lt;String, TableInfo.Column&gt; _columnsPendingChanges = new HashMap&lt;String, TableInfo.Column&gt;(12);</span>
+<span class="nc" id="L111">        _columnsPendingChanges.put(&quot;change_id&quot;, new TableInfo.Column(&quot;change_id&quot;, &quot;INTEGER&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L112">        _columnsPendingChanges.put(&quot;operation&quot;, new TableInfo.Column(&quot;operation&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L113">        _columnsPendingChanges.put(&quot;device_id&quot;, new TableInfo.Column(&quot;device_id&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L114">        _columnsPendingChanges.put(&quot;employee_id&quot;, new TableInfo.Column(&quot;employee_id&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L115">        _columnsPendingChanges.put(&quot;device_type&quot;, new TableInfo.Column(&quot;device_type&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L116">        _columnsPendingChanges.put(&quot;device_name&quot;, new TableInfo.Column(&quot;device_name&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L117">        _columnsPendingChanges.put(&quot;model&quot;, new TableInfo.Column(&quot;model&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L118">        _columnsPendingChanges.put(&quot;manufacturer&quot;, new TableInfo.Column(&quot;manufacturer&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L119">        _columnsPendingChanges.put(&quot;identification_id&quot;, new TableInfo.Column(&quot;identification_id&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L120">        _columnsPendingChanges.put(&quot;other_details&quot;, new TableInfo.Column(&quot;other_details&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L121">        _columnsPendingChanges.put(&quot;date&quot;, new TableInfo.Column(&quot;date&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L122">        _columnsPendingChanges.put(&quot;last_modified&quot;, new TableInfo.Column(&quot;last_modified&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</span>
+<span class="nc" id="L123">        final HashSet&lt;TableInfo.ForeignKey&gt; _foreignKeysPendingChanges = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</span>
+<span class="nc" id="L124">        final HashSet&lt;TableInfo.Index&gt; _indicesPendingChanges = new HashSet&lt;TableInfo.Index&gt;(0);</span>
+<span class="nc" id="L125">        final TableInfo _infoPendingChanges = new TableInfo(&quot;pending_changes&quot;, _columnsPendingChanges, _foreignKeysPendingChanges, _indicesPendingChanges);</span>
+<span class="nc" id="L126">        final TableInfo _existingPendingChanges = TableInfo.read(_db, &quot;pending_changes&quot;);</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (! _infoPendingChanges.equals(_existingPendingChanges)) {</span>
+<span class="nc" id="L128">          return new RoomOpenHelper.ValidationResult(false, &quot;pending_changes(com.ajit.devicemanagement.data.model.Change).\n&quot;</span>
+                  + &quot; Expected:\n&quot; + _infoPendingChanges + &quot;\n&quot;
+                  + &quot; Found:\n&quot; + _existingPendingChanges);
+        }
+<span class="nc" id="L132">        return new RoomOpenHelper.ValidationResult(true, null);</span>
+      }
+    }, &quot;b0feb02c6cf2d47c33e3d2acf1f90386&quot;, &quot;aac5655442100bb76ec854534e5dbf86&quot;);
+<span class="nc" id="L135">    final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(configuration.context)</span>
+<span class="nc" id="L136">        .name(configuration.name)</span>
+<span class="nc" id="L137">        .callback(_openCallback)</span>
+<span class="nc" id="L138">        .build();</span>
+<span class="nc" id="L139">    final SupportSQLiteOpenHelper _helper = configuration.sqliteOpenHelperFactory.create(_sqliteConfig);</span>
+<span class="nc" id="L140">    return _helper;</span>
+  }
+
+  @Override
+  protected InvalidationTracker createInvalidationTracker() {
+<span class="nc" id="L145">    final HashMap&lt;String, String&gt; _shadowTablesMap = new HashMap&lt;String, String&gt;(0);</span>
+<span class="nc" id="L146">    HashMap&lt;String, Set&lt;String&gt;&gt; _viewTables = new HashMap&lt;String, Set&lt;String&gt;&gt;(0);</span>
+<span class="nc" id="L147">    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, &quot;devices&quot;,&quot;pending_changes&quot;);</span>
+  }
+
+  @Override
+  public void clearAllTables() {
+<span class="nc" id="L152">    super.assertNotMainThread();</span>
+<span class="nc" id="L153">    final SupportSQLiteDatabase _db = super.getOpenHelper().getWritableDatabase();</span>
+    try {
+<span class="nc" id="L155">      super.beginTransaction();</span>
+<span class="nc" id="L156">      _db.execSQL(&quot;DELETE FROM `devices`&quot;);</span>
+<span class="nc" id="L157">      _db.execSQL(&quot;DELETE FROM `pending_changes`&quot;);</span>
+<span class="nc" id="L158">      super.setTransactionSuccessful();</span>
+    } finally {
+<span class="nc" id="L160">      super.endTransaction();</span>
+<span class="nc" id="L161">      _db.query(&quot;PRAGMA wal_checkpoint(FULL)&quot;).close();</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">      if (!_db.inTransaction()) {</span>
+<span class="nc" id="L163">        _db.execSQL(&quot;VACUUM&quot;);</span>
+      }
+    }
+<span class="nc" id="L166">  }</span>
+
+  @Override
+  protected Map&lt;Class&lt;?&gt;, List&lt;Class&lt;?&gt;&gt;&gt; getRequiredTypeConverters() {
+<span class="nc" id="L170">    final HashMap&lt;Class&lt;?&gt;, List&lt;Class&lt;?&gt;&gt;&gt; _typeConvertersMap = new HashMap&lt;Class&lt;?&gt;, List&lt;Class&lt;?&gt;&gt;&gt;();</span>
+<span class="nc" id="L171">    _typeConvertersMap.put(DeviceDao.class, DeviceDao_Impl.getRequiredConverters());</span>
+<span class="nc" id="L172">    return _typeConvertersMap;</span>
+  }
+
+  @Override
+  public Set&lt;Class&lt;? extends AutoMigrationSpec&gt;&gt; getRequiredAutoMigrationSpecs() {
+<span class="nc" id="L177">    final HashSet&lt;Class&lt;? extends AutoMigrationSpec&gt;&gt; _autoMigrationSpecsSet = new HashSet&lt;Class&lt;? extends AutoMigrationSpec&gt;&gt;();</span>
+<span class="nc" id="L178">    return _autoMigrationSpecsSet;</span>
+  }
+
+  @Override
+  public List&lt;Migration&gt; getAutoMigrations(
+      @NonNull Map&lt;Class&lt;? extends AutoMigrationSpec&gt;, AutoMigrationSpec&gt; autoMigrationSpecsMap) {
+<span class="nc" id="L184">    return Arrays.asList();</span>
+  }
+
+  @Override
+  public DeviceDao deviceDao() {
+<span class="nc bnc" id="L189" title="All 2 branches missed.">    if (_deviceDao != null) {</span>
+<span class="nc" id="L190">      return _deviceDao;</span>
+    } else {
+<span class="nc" id="L192">      synchronized(this) {</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        if(_deviceDao == null) {</span>
+<span class="nc" id="L194">          _deviceDao = new DeviceDao_Impl(this);</span>
+        }
+<span class="nc" id="L196">        return _deviceDao;</span>
+      }
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

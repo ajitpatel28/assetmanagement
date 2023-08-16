@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+<!--    <item-->
+<!--        android:id="@+id/homeFragment"-->
+<!--        android:icon="@drawable/bottom_btn1"-->
+<!--        android:title="Home" />-->
+    <item
+        android:id="@+id/dashboardFragment"
+        android:icon="@drawable/baseline_home_24"
+        android:title="Home" />
+    <item
+        android:id="@+id/addNewDeviceFragment"
+        android:icon="@drawable/add_devices_icon"
+        android:title="@string/add_your_device" />
+    <item
+        android:id="@+id/deviceListingFragment"
+        android:icon="@drawable/devices_icon"
+        android:title="My devices" />
+    <item
+        android:id="@+id/userProfileFragment"
+        android:icon="@drawable/user_icon"
+        android:title="My devices" />
+</menu>

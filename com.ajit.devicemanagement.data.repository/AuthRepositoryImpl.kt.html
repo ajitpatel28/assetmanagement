@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuthRepositoryImpl.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DeviceViewModelTest (1) Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.ajit.devicemanagement.data.repository</a> &gt; <span class="el_source">AuthRepositoryImpl.kt</span></div><h1>AuthRepositoryImpl.kt</h1><pre class="source lang-java linenums">package com.ajit.devicemanagement.data.repository
+
+import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.net.Uri
+import android.provider.MediaStore
+import android.util.Log
+import com.ajit.devicemanagement.data.model.User
+import com.ajit.devicemanagement.util.FireStoreCollection
+import com.ajit.devicemanagement.util.SharedPrefConstants
+import com.ajit.devicemanagement.util.UiState
+import com.google.firebase.auth.*
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.Gson
+import java.io.FileOutputStream
+
+
+<span class="nc" id="L20">class AuthRepositoryImpl(</span>
+<span class="nc" id="L21">    val auth: FirebaseAuth,</span>
+<span class="nc" id="L22">    val database: FirebaseFirestore,</span>
+<span class="nc" id="L23">    val appPreferences: SharedPreferences,</span>
+<span class="nc" id="L24">    val gson: Gson,</span>
+) : AuthRepository {
+
+<span class="nc" id="L27">    private val storageRef = FirebaseStorage.getInstance().reference</span>
+
+
+
+
+        override fun registerUser(
+            email: String,
+            password: String,
+            user: User, result: (UiState&lt;String&gt;) -&gt; Unit
+        ) {
+<span class="nc" id="L37">            auth.createUserWithEmailAndPassword(email,password)</span>
+<span class="nc" id="L38">                .addOnCompleteListener {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">                    if (it.isSuccessful){</span>
+<span class="nc bnc" id="L40" title="All 4 branches missed.">                        user.id = it.result.user?.uid ?: &quot;&quot;</span>
+<span class="nc" id="L41">                        updateUserInfo(user) { state -&gt;</span>
+<span class="nc" id="L42">                            when(state){</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">                                is UiState.Success -&gt; {</span>
+<span class="nc bnc" id="L44" title="All 4 branches missed.">                                    storeSession(id = it.result.user?.uid ?: &quot;&quot;) {</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">                                        if (it == null){</span>
+<span class="nc" id="L46">                                            result.invoke(UiState.Failure(&quot;User register successfully but session failed to store&quot;))</span>
+                                        }else{
+<span class="nc" id="L48">                                            result.invoke(</span>
+<span class="nc" id="L49">                                                UiState.Success(&quot;User register successfully!&quot;)</span>
+                                            )
+                                        }
+<span class="nc" id="L52">                                    }</span>
+                                }
+<span class="nc bnc" id="L54" title="All 2 branches missed.">                                is UiState.Failure -&gt; {</span>
+<span class="nc" id="L55">                                    result.invoke(UiState.Failure(state.error))</span>
+                                }
+                                else -&gt; {}
+                            }
+<span class="nc" id="L59">                        }</span>
+                    }else{
+<span class="nc" id="L61">                        try {</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                            throw it.exception ?: java.lang.Exception(&quot;Invalid authentication&quot;)</span>
+<span class="nc" id="L63">                        } catch (e: FirebaseAuthWeakPasswordException) {</span>
+<span class="nc" id="L64">                            result.invoke(UiState.Failure(&quot;Authentication failed, Password should be at least 6 characters&quot;))</span>
+<span class="nc" id="L65">                        } catch (e: FirebaseAuthInvalidCredentialsException) {</span>
+<span class="nc" id="L66">                            result.invoke(UiState.Failure(&quot;Authentication failed, Invalid email entered&quot;))</span>
+<span class="nc" id="L67">                        } catch (e: FirebaseAuthUserCollisionException) {</span>
+<span class="nc" id="L68">                            result.invoke(UiState.Failure(&quot;Authentication failed, Email already registered.&quot;))</span>
+<span class="nc" id="L69">                        } catch (e: Exception) {</span>
+<span class="nc" id="L70">                            result.invoke(UiState.Failure(e.message))</span>
+                        }
+                    }
+<span class="nc" id="L73">                }</span>
+<span class="nc" id="L74">                .addOnFailureListener {</span>
+<span class="nc" id="L75">                    result.invoke(</span>
+<span class="nc" id="L76">                        UiState.Failure(</span>
+<span class="nc" id="L77">                            it.localizedMessage</span>
+                        )
+                    )
+<span class="nc" id="L80">                }</span>
+<span class="nc" id="L81">        }</span>
+
+    override fun updateUserInfo(user: User, result: (UiState&lt;String&gt;) -&gt; Unit) {
+<span class="nc" id="L84">        val document = database.collection(FireStoreCollection.USER).document(user.id)</span>
+<span class="nc" id="L85">        document</span>
+<span class="nc" id="L86">            .set(user)</span>
+<span class="nc" id="L87">            .addOnSuccessListener {</span>
+<span class="nc" id="L88">                result.invoke(</span>
+<span class="nc" id="L89">                    UiState.Success(&quot;User has been update successfully&quot;)</span>
+                )
+<span class="nc" id="L91">            }</span>
+<span class="nc" id="L92">            .addOnFailureListener {</span>
+<span class="nc" id="L93">                result.invoke(</span>
+<span class="nc" id="L94">                    UiState.Failure(</span>
+<span class="nc" id="L95">                        it.localizedMessage</span>
+                    )
+                )
+<span class="nc" id="L98">            }</span>
+<span class="nc" id="L99">    }</span>
+
+    override fun loginUser(
+        email: String,
+        password: String,
+        result: (UiState&lt;String&gt;) -&gt; Unit) {
+<span class="nc" id="L105">        auth.signInWithEmailAndPassword(email,password)</span>
+<span class="nc" id="L106">            .addOnCompleteListener { task -&gt;</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                if (task.isSuccessful) {</span>
+
+<span class="nc" id="L109">                    Log.e(&quot;login&quot;,&quot;login success ${task.result}&quot;)</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">                    storeSession(id = task.result.user?.uid ?: &quot;&quot;){</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">                        if (it == null){</span>
+<span class="nc" id="L112">                            result.invoke(UiState.Failure(&quot;Failed to store local session&quot;))</span>
+                        }else{
+
+
+<span class="nc" id="L116">                            result.invoke(UiState.Success(&quot;Login successfully!&quot;))</span>
+                        }
+<span class="nc" id="L118">                    }</span>
+                }
+<span class="nc" id="L120">            }.addOnFailureListener {</span>
+<span class="nc" id="L121">                result.invoke(UiState.Failure(&quot;Authentication failed, Check email and password&quot;))</span>
+<span class="nc" id="L122">            }</span>
+<span class="nc" id="L123">    }</span>
+
+    override fun forgotPassword(email: String, result: (UiState&lt;String&gt;) -&gt; Unit) {
+<span class="nc" id="L126">        auth.sendPasswordResetEmail(email)</span>
+<span class="nc" id="L127">            .addOnCompleteListener { task -&gt;</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">                if (task.isSuccessful) {</span>
+<span class="nc" id="L129">                    result.invoke(UiState.Success(&quot;Email has been sent&quot;))</span>
+
+                } else {
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                    result.invoke(UiState.Failure(task.exception?.message))</span>
+                }
+<span class="nc" id="L134">            }.addOnFailureListener {</span>
+<span class="nc" id="L135">                result.invoke(UiState.Failure(&quot;Authentication failed, Check email&quot;))</span>
+<span class="nc" id="L136">            }</span>
+<span class="nc" id="L137">    }</span>
+
+    override fun logout(result: () -&gt; Unit) {
+<span class="nc" id="L140">        auth.signOut()</span>
+<span class="nc" id="L141">        appPreferences.edit().putString(SharedPrefConstants.USER_SESSION,null).apply()</span>
+
+
+<span class="nc" id="L144">        result.invoke()</span>
+<span class="nc" id="L145">    }</span>
+
+    override fun updateUser(user: User, result: (UiState&lt;String&gt;) -&gt; Unit) {
+<span class="nc" id="L148">        val document = database.collection(FireStoreCollection.USER).document(user.id)</span>
+<span class="nc" id="L149">        document.get()</span>
+<span class="nc" id="L150">            .addOnSuccessListener { snapshot -&gt;</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                if (snapshot.exists()) {</span>
+<span class="nc" id="L152">                    document.update(</span>
+<span class="nc" id="L153">                        &quot;name&quot;, user.name,</span>
+<span class="nc" id="L154">                        &quot;mobileNumber&quot;, user.mobileNumber,</span>
+<span class="nc" id="L155">                        &quot;updatedAt&quot;, System.currentTimeMillis()</span>
+                    )
+<span class="nc" id="L157">                        .addOnSuccessListener {</span>
+                            // Update the user details in shared preferences
+<span class="nc" id="L159">                            storeSession(user.id) { storedUser -&gt;</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">                                if (storedUser != null) {</span>
+<span class="nc" id="L161">                                    result.invoke(UiState.Success(&quot;User has been updated successfully&quot;))</span>
+                                } else {
+<span class="nc" id="L163">                                    result.invoke(UiState.Failure(&quot;Failed to update user in shared preferences&quot;))</span>
+                                }
+<span class="nc" id="L165">                            }</span>
+<span class="nc" id="L166">                        }</span>
+<span class="nc" id="L167">                        .addOnFailureListener { exception -&gt;</span>
+<span class="nc" id="L168">                            result.invoke(UiState.Failure(exception.localizedMessage))</span>
+<span class="nc" id="L169">                        }</span>
+                } else {
+<span class="nc" id="L171">                    result.invoke(UiState.Failure(&quot;User does not exist&quot;))</span>
+                }
+<span class="nc" id="L173">            }</span>
+<span class="nc" id="L174">            .addOnFailureListener { exception -&gt;</span>
+<span class="nc" id="L175">                result.invoke(UiState.Failure(exception.localizedMessage))</span>
+<span class="nc" id="L176">            }</span>
+<span class="nc" id="L177">    }</span>
+
+
+    override fun storeSession(id: String, result: (User?) -&gt; Unit) {
+<span class="nc" id="L181">        database.collection(FireStoreCollection.USER).document(id)</span>
+<span class="nc" id="L182">            .get()</span>
+<span class="nc" id="L183">            .addOnCompleteListener {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                if (it.isSuccessful){</span>
+<span class="nc" id="L185">                    val user = it.result.toObject(User::class.java)</span>
+<span class="nc" id="L186">                    appPreferences.edit().putString(SharedPrefConstants.USER_SESSION,gson.toJson(user)).apply()</span>
+<span class="nc" id="L187">                    result.invoke(user)</span>
+                }else{
+<span class="nc" id="L189">                    result.invoke(null)</span>
+                }
+<span class="nc" id="L191">            }</span>
+<span class="nc" id="L192">            .addOnFailureListener {</span>
+<span class="nc" id="L193">                result.invoke(null)</span>
+<span class="nc" id="L194">            }</span>
+<span class="nc" id="L195">    }</span>
+
+
+    override fun uploadProfilePicture(userId: String, imageUri: Uri, result: (UiState&lt;String&gt;) -&gt; Unit) {
+<span class="nc" id="L199">        val profilePicRef = storageRef.child(&quot;profilePicture/$userId&quot;)</span>
+<span class="nc" id="L200">        val uploadTask = profilePicRef.putFile(imageUri)</span>
+
+<span class="nc" id="L202">        uploadTask.addOnCompleteListener { task -&gt;</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            if (task.isSuccessful) {</span>
+<span class="nc" id="L204">                profilePicRef.downloadUrl.addOnSuccessListener { uri -&gt;</span>
+<span class="nc" id="L205">                    val userProfile = hashMapOf(</span>
+<span class="nc" id="L206">                        &quot;profilePicture&quot; to uri.toString()</span>
+                    )
+
+
+<span class="nc" id="L210">                    database.collection(&quot;user&quot;).document(userId)</span>
+<span class="nc" id="L211">                        .set(userProfile, SetOptions.merge())</span>
+<span class="nc" id="L212">                        .addOnSuccessListener {</span>
+<span class="nc" id="L213">                            result.invoke(UiState.Success(&quot;Profile updated&quot;))</span>
+<span class="nc" id="L214">                        }</span>
+<span class="nc" id="L215">                        .addOnFailureListener { e -&gt;</span>
+<span class="nc" id="L216">                            result.invoke(UiState.Failure(&quot;Profile not updated&quot;))</span>
+<span class="nc" id="L217">                        }</span>
+
+<span class="nc" id="L219">                }</span>
+            } else {
+<span class="nc" id="L221">                result.invoke(UiState.Failure(&quot;Something went wrong&quot;))</span>
+            }
+<span class="nc" id="L223">        }</span>
+<span class="nc" id="L224">    }</span>
+
+
+
+
+    override fun getSession(result: (User?) -&gt; Unit) {
+<span class="nc" id="L230">        val user_str = appPreferences.getString(SharedPrefConstants.USER_SESSION, null)</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">        if (user_str == null) {</span>
+<span class="nc" id="L232">            result.invoke(null)</span>
+        } else {
+<span class="nc" id="L234">            val user = gson.fromJson(user_str, User::class.java)</span>
+<span class="nc" id="L235">            result.invoke(user)</span>
+        }
+<span class="nc" id="L237">    }</span>
+
+
+
+
+    }
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

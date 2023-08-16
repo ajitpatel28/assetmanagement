@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">devicemanagement</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="device_item_model_placholder">Hii</string>
+    <string name="device_item_manufacturer_placholder">Hii</string>
+    <string name="device_item_os_placholder">Hii</string>
+    <string name="device_item_desc_placholder">Hii</string>
+    <string name="select_device_type">select device type</string>
+    <string name="add_button_label">Add</string>
+    <string name="update_button_label">Update</string>
+    <string name="enter_email">Enter your email address</string>
+    <string name="invalid_email">Please enter a valid email address</string>
+    <string name="enter_password">Enter your password</string>
+    <string name="invalid_password">Please enter a valid password</string>
+    <string name="enter_first_name">Enter your first name</string>
+    <string name="enter_last_name">Enter your last name</string>
+    <string name="enter_job_title">Enter your job title</string>
+    <string name="enter_mobile">Enter your mobile number</string>
+    <string name="log_in">Log In</string>
+    <string name="intro_text">The Device Management System is a mobile application developed for managing and tracking devices and assets within an organization. It provides features for adding, updating, and viewing device information. The application utilizes the MVVM architecture pattern and integrates with the Firebase Firestore database for online and Room Database for offline data storage.</string>
+    <string name="add_your_device">Add Your Device</string>
+    <string name="update_your_device">Update Your Device</string>
+    <string name="send">Send</string>
+    <string name="enter_your_email_address">Enter your email address</string>
+
+
+    <string-array name="device_types">
+        <item>Laptop</item>
+        <item>Mobile</item>
+        <item>Desktop</item>
+        <item>Peripherals</item>
+    </string-array>
+
+
+
+</resources>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DeviceContentProvider.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DeviceViewModelTest (1) Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.ajit.devicemanagement.data.provider</a> &gt; <span class="el_source">DeviceContentProvider.kt</span></div><h1>DeviceContentProvider.kt</h1><pre class="source lang-java linenums">package com.ajit.devicemanagement.data.provider
+
+import android.content.ContentProvider
+import android.content.ContentUris
+import android.content.ContentValues
+import android.content.UriMatcher
+import android.database.Cursor
+import android.net.Uri
+import android.util.Log
+import androidx.sqlite.db.SimpleSQLiteQuery
+import com.ajit.devicemanagement.data.AppDatabase
+import com.ajit.devicemanagement.data.dao.DeviceDao
+import com.ajit.devicemanagement.data.model.Change
+import com.ajit.devicemanagement.data.model.RoomDevice
+import kotlinx.coroutines.*
+
+<span class="nc" id="L17">class DeviceContentProvider : ContentProvider() {</span>
+    private lateinit var deviceDao: DeviceDao
+
+    // Authority for the content provider
+<span class="nc" id="L21">    private val authority = &quot;com.ajit.devicemanagement.data.provider.DeviceContentProvider&quot;</span>
+
+    // UriMatcher codes for the tables
+<span class="nc" id="L24">    private val devicesCode = 1</span>
+<span class="nc" id="L25">    private val changesCode = 2</span>
+
+    // UriMatcher instance
+<span class="nc" id="L28">    private val uriMatcher: UriMatcher = UriMatcher(UriMatcher.NO_MATCH)</span>
+
+<span class="nc" id="L30">    init {</span>
+        // Add the content URI patterns for devices and changes tables
+<span class="nc" id="L32">        uriMatcher.addURI(authority, &quot;devices&quot;, devicesCode)</span>
+<span class="nc" id="L33">        uriMatcher.addURI(authority, &quot;pending_changes&quot;, changesCode)</span>
+<span class="nc" id="L34">        uriMatcher.addURI(authority, &quot;pending_changes/#&quot;, changesCode)</span>
+<span class="nc" id="L35">    }</span>
+
+    override fun onCreate(): Boolean {
+<span class="nc" id="L38">        Log.d(&quot;DeviceContentProvider&quot;, &quot;DeviceContentProvider called&quot;)</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        val context = context ?: return false</span>
+<span class="nc" id="L40">        val database = AppDatabase.getDatabase(context)</span>
+<span class="nc" id="L41">        deviceDao = database.deviceDao()</span>
+<span class="nc" id="L42">        return true</span>
+    }
+
+    override fun insert(uri: Uri, values: ContentValues?): Uri? {
+<span class="nc" id="L46">        return when (uriMatcher.match(uri)) {</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            devicesCode -&gt; {</span>
+<span class="nc" id="L48">                val device = RoomDevice.fromContentValues(values!!)</span>
+<span class="nc" id="L49">                GlobalScope.launch {</span>
+<span class="nc" id="L50">                    Log.d(&quot;DeviceContentProvider&quot;, &quot;Inserting device: $device&quot;)</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">                    val insertedId = deviceDao.addDevice(device)</span>
+<span class="nc" id="L52">                    device.deviceId = insertedId.toString()</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                    withContext(Dispatchers.Main) {</span>
+<span class="nc bnc" id="L54" title="All 4 branches missed.">                        context?.contentResolver?.notifyChange(uri, null)</span>
+<span class="nc" id="L55">                    }</span>
+<span class="nc" id="L56">                }</span>
+<span class="nc" id="L57">                Log.d(&quot;DeviceContentProvider&quot;, &quot;Inserted device: $device&quot;)</span>
+<span class="nc" id="L58">                ContentUris.withAppendedId(uri, device.deviceId.toLong())</span>
+            }
+<span class="nc bnc" id="L60" title="All 2 branches missed.">            changesCode -&gt; {</span>
+<span class="nc" id="L61">                val change = Change.fromContentValues(values!!)</span>
+<span class="nc" id="L62">                GlobalScope.launch {</span>
+<span class="nc" id="L63">                    Log.d(&quot;DeviceContentProvider&quot;, &quot;Inserting change: $change&quot;)</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">                    val insertedId = deviceDao.addChange(change)</span>
+<span class="nc" id="L65">                    change.id = insertedId</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">                    withContext(Dispatchers.Main) {</span>
+<span class="nc bnc" id="L67" title="All 4 branches missed.">                        context?.contentResolver?.notifyChange(uri, null)</span>
+<span class="nc" id="L68">                    }</span>
+<span class="nc" id="L69">                }</span>
+<span class="nc" id="L70">                ContentUris.withAppendedId(uri, change.id)</span>
+            }
+<span class="nc" id="L72">            else -&gt; null</span>
+        }
+    }
+
+    override fun query(
+        uri: Uri,
+        projection: Array&lt;String&gt;?,
+        selection: String?,
+        selectionArgs: Array&lt;String&gt;?,
+        sortOrder: String?
+    ): Cursor? {
+<span class="nc" id="L83">        return when (uriMatcher.match(uri)) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            devicesCode -&gt; {</span>
+<span class="nc" id="L85">                val query = SimpleSQLiteQuery(&quot;SELECT * FROM devices &quot;)</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">                deviceDao.getDevicesCursor(query)</span>
+            }
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            changesCode -&gt; {</span>
+<span class="nc" id="L89">                val query = SimpleSQLiteQuery(&quot;SELECT * FROM pending_changes&quot;)</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                deviceDao.getChangesCursor(query)</span>
+            }
+<span class="nc" id="L92">            else -&gt; null</span>
+        }
+    }
+
+    override fun update(
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array&lt;out String&gt;?
+    ): Int {
+<span class="nc" id="L102">        return when (uriMatcher.match(uri)) {</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">            devicesCode -&gt; {</span>
+<span class="nc" id="L104">                val device = RoomDevice.fromContentValues(values!!)</span>
+<span class="nc" id="L105">                Log.d(&quot;DeviceContentProvider&quot;, &quot;content updating device: $device&quot;)</span>
+<span class="nc" id="L106">                GlobalScope.launch {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                    deviceDao.addDevice(device)</span>
+<span class="nc" id="L108">                    Log.d(&quot;DeviceContentProvider&quot;, &quot;Update method called for URI: $uri&quot;)</span>
+<span class="nc" id="L109">                    Log.e(&quot;DeviceContentProvider&quot;, &quot;Updating device $device&quot;)</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                    withContext(Dispatchers.Main) {</span>
+<span class="nc bnc" id="L111" title="All 4 branches missed.">                        context?.contentResolver?.notifyChange(uri, null)</span>
+<span class="nc" id="L112">                    }</span>
+<span class="nc" id="L113">                }</span>
+<span class="nc" id="L114">                1</span>
+            }
+<span class="nc bnc" id="L116" title="All 2 branches missed.">            changesCode -&gt; {</span>
+<span class="nc" id="L117">                val change = Change.fromContentValues(values!!)</span>
+<span class="nc" id="L118">                GlobalScope.launch {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                    deviceDao.deleteChange(change)</span>
+<span class="nc" id="L120">                    Log.d(&quot;DeviceContentProvider&quot;, &quot;Update method called for URI: $uri&quot;)</span>
+<span class="nc" id="L121">                    Log.e(&quot;DeviceContentProvider&quot;, &quot;Updating change $change&quot;)</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                    withContext(Dispatchers.Main) {</span>
+<span class="nc bnc" id="L123" title="All 4 branches missed.">                        context?.contentResolver?.notifyChange(uri, null)</span>
+<span class="nc" id="L124">                    }</span>
+<span class="nc" id="L125">                }</span>
+<span class="nc" id="L126">                1</span>
+            }
+<span class="nc" id="L128">            else -&gt; 0</span>
+        }
+    }
+
+    override fun delete(uri: Uri, selection: String?, selectionArgs: Array&lt;out String&gt;?): Int {
+<span class="nc" id="L133">        Log.d(&quot;DeviceContentProvider&quot;, &quot;URI received: $uri&quot;)</span>
+
+<span class="nc" id="L135">        return when (uriMatcher.match(uri)) {</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">            devicesCode -&gt; {</span>
+<span class="nc" id="L137">                Log.d(&quot;DeviceContentProvider&quot;, &quot; device cocde URI received: $uri&quot;)</span>
+
+<span class="nc" id="L139">                GlobalScope.launch {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                    val deviceId = selectionArgs?.getOrNull(0)</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">                    if (deviceId != null) {</span>
+<span class="nc bnc" id="L142" title="All 6 branches missed.">                        val device = deviceDao.getDevices().find { it.deviceId == deviceId }</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                        device?.let {</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                            deviceDao.deleteDevice(it)</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">                            withContext(Dispatchers.Main) {</span>
+<span class="nc bnc" id="L146" title="All 4 branches missed.">                                context?.contentResolver?.notifyChange(uri, null)</span>
+                            }
+                        }
+                    }
+<span class="nc" id="L150">                }</span>
+<span class="nc" id="L151">                1</span>
+            }
+<span class="nc bnc" id="L153" title="All 2 branches missed.">            changesCode -&gt; {</span>
+<span class="nc" id="L154">                Log.d(&quot;DeviceContentProvider&quot;, &quot; change URI called: $uri&quot;)</span>
+
+<span class="nc" id="L156">                GlobalScope.launch {</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                    val changeId = selectionArgs?.getOrNull(0)</span>
+<span class="nc" id="L158">                    Log.e(&quot;content prvider&quot;,&quot;change deleting, $selectionArgs&quot;)</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">                    if (changeId != null) {</span>
+<span class="nc bnc" id="L160" title="All 8 branches missed.">                        val change = deviceDao.getAllPendingChanges().find { it.id == changeId.toLong() }</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                        change?.let {</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                            deviceDao.deleteChange(it)</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">                            withContext(Dispatchers.Main) {</span>
+<span class="nc bnc" id="L164" title="All 4 branches missed.">                                context?.contentResolver?.notifyChange(uri, null)</span>
+                            }
+                        }
+                    }
+<span class="nc" id="L168">                }</span>
+<span class="nc" id="L169">                1</span>
+            }
+            else -&gt; {
+<span class="nc" id="L172">                    Log.d(&quot;DeviceContentProvider&quot;, &quot;Uri match not found for: $uri&quot;)</span>
+<span class="nc" id="L173">                    0</span>
+
+
+            }
+        }
+    }
+
+    override fun getType(uri: Uri): String? {
+<span class="nc" id="L181">        return null</span>
+    }
+}
+
+
+
+
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

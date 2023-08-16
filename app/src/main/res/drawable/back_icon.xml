@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp"
+    android:height="32dp"
+    android:viewportWidth="32"
+    android:viewportHeight="32">
+  <path
+      android:pathData="M9.5,-0.5C13.5,-0.5 17.5,-0.5 21.5,-0.5C25.833,1.833 29.167,5.167 31.5,9.5C31.5,13.5 31.5,17.5 31.5,21.5C29.167,25.833 25.833,29.167 21.5,31.5C17.5,31.5 13.5,31.5 9.5,31.5C5.167,29.167 1.833,25.833 -0.5,21.5C-0.5,17.5 -0.5,13.5 -0.5,9.5C0.167,8.833 0.833,8.167 1.5,7.5C3.833,5.833 5.833,3.833 7.5,1.5C8.167,0.833 8.833,0.167 9.5,-0.5Z"
+      android:fillColor="?attr/colorPrimaryContainer"/>
+  <path
+      android:pathData="M7.5,1.5C5.833,3.833 3.833,5.833 1.5,7.5C2.5,4.5 4.5,2.5 7.5,1.5Z"
+      android:strokeAlpha="0.965"
+      android:fillColor="?attr/colorPrimaryContainer"
+      android:fillAlpha="0.965"/>
+  <path
+      android:pathData="M13.5,7.5C14.478,7.811 15.144,8.478 15.5,9.5C14.352,11.149 13.019,12.649 11.5,14C28.833,15 28.833,16 11.5,17C13.019,18.351 14.352,19.851 15.5,21.5C15.192,22.308 14.692,22.975 14,23.5C11.317,20.984 8.817,18.317 6.5,15.5C8.856,12.814 11.189,10.147 13.5,7.5Z"
+      android:fillColor="?attr/cardBackgroundColor"
+      android:strokeColor="?attr/colorSecondary"
+      android:strokeWidth="1"/>
+</vector>

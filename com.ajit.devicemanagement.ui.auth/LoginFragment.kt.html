@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LoginFragment.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DeviceViewModelTest (1) Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.ajit.devicemanagement.ui.auth</a> &gt; <span class="el_source">LoginFragment.kt</span></div><h1>LoginFragment.kt</h1><pre class="source lang-java linenums">package com.ajit.devicemanagement.ui.auth
+
+import com.ajit.devicemanagement.data.provider.DataSyncManager
+import android.content.Context
+import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.ajit.devicemanagement.R
+import com.ajit.devicemanagement.data.model.User
+import com.ajit.devicemanagement.databinding.FragmentLoginBinding
+import com.ajit.devicemanagement.util.*
+import dagger.hilt.android.AndroidEntryPoint
+
+
+
+@AndroidEntryPoint
+<span class="nc" id="L23">class LoginFragment : Fragment() {</span>
+
+    object UserSession {
+<span class="nc" id="L26">        var loggedInUser: User? = null</span>
+    }
+
+    private lateinit var binding: FragmentLoginBinding
+    private lateinit var dataSyncManager: DataSyncManager
+<span class="nc" id="L31">    private val viewModel: AuthViewModel by viewModels()</span>
+    private var isPasswordVisible = false
+
+
+
+    override fun onAttach(context: Context) {
+<span class="nc" id="L37">        super.onAttach(context)</span>
+<span class="nc" id="L38">        dataSyncManager = DataSyncManager(requireContext())</span>
+<span class="nc" id="L39">    }</span>
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+<span class="nc" id="L45">        binding = FragmentLoginBinding.inflate(layoutInflater)</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        return binding.root</span>
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+<span class="nc" id="L50">        super.onViewCreated(view, savedInstanceState)</span>
+<span class="nc" id="L51">        observe()</span>
+
+
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        binding.toggleBtn.setOnClickListener {</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            isPasswordVisible = !isPasswordVisible</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            if (isPasswordVisible) {</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">                binding.passEt.transformationMethod = HideReturnsTransformationMethod.getInstance()</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                binding.toggleBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.eye_open, 0)</span>
+            } else {
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                binding.passEt.transformationMethod = PasswordTransformationMethod.getInstance()</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">                binding.toggleBtn.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.eye, 0)</span>
+            }
+<span class="nc bnc" id="L63" title="All 4 branches missed.">            binding.passEt.setSelection(binding.passEt.text.length) // Maintain cursor position</span>
+<span class="nc" id="L64">        }</span>
+
+
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        binding.loginBtn.setOnClickListener {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            if (validation()) {</span>
+<span class="nc" id="L69">                viewModel.login(</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                    email = binding.emailEt.text.toString(),</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                    password = binding.passEt.text.toString()</span>
+                )
+            }
+<span class="nc" id="L74">        }</span>
+
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        binding.forgotpassword.setOnClickListener {</span>
+<span class="nc" id="L77">            findNavController().navigate(R.id.action_loginFragment_to_forgotPasswordFragment)</span>
+<span class="nc" id="L78">        }</span>
+
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        binding.registerLabel.setOnClickListener {</span>
+<span class="nc" id="L81">            findNavController().navigate(R.id.action_loginFragment_to_registerFragment)</span>
+<span class="nc" id="L82">        }</span>
+<span class="nc" id="L83">    }</span>
+
+    private fun observe() {
+<span class="nc" id="L86">        viewModel.login.observe(viewLifecycleOwner) { state -&gt;</span>
+<span class="nc" id="L87">            when (state) {</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                is UiState.Loading -&gt; {</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                    binding.loginBtn.setText(&quot;&quot;)</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                    binding.loginProgress.show()</span>
+                }
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                is UiState.Failure -&gt; {</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                    binding.loginBtn.setText(&quot;Login&quot;)</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                    binding.loginProgress.hide()</span>
+<span class="nc" id="L95">                    toast(state.error)</span>
+                }
+<span class="nc bnc" id="L97" title="All 2 branches missed.">                is UiState.Success -&gt; {</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">                    binding.loginBtn.setText(&quot;Login&quot;)</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">                    binding.loginProgress.hide()</span>
+<span class="nc" id="L100">                    toast(state.data)</span>
+<span class="nc" id="L101">                    viewModel.getSession { user -&gt;</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                        if (user != null) {</span>
+<span class="nc" id="L103">                            UserSession.loggedInUser = user</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">                            dataSyncManager.startSync{</span>
+<span class="nc" id="L105">                            findNavController().navigate(R.id.action_loginFragment_to_homeFragment)</span>
+<span class="nc" id="L106">                        }</span>
+                    }
+<span class="nc" id="L108">                    }</span>
+                }
+            }
+<span class="nc" id="L111">        }</span>
+<span class="nc" id="L112">    }</span>
+
+    private fun validation(): Boolean {
+<span class="nc" id="L115">        var isValid = true</span>
+
+<span class="nc bnc" id="L117" title="All 8 branches missed.">        if (binding.emailEt.text.isNullOrEmpty()) {</span>
+<span class="nc" id="L118">            isValid = false</span>
+<span class="nc" id="L119">            toast(getString(R.string.enter_email))</span>
+        } else {
+<span class="nc bnc" id="L121" title="All 4 branches missed.">            if (!binding.emailEt.text.toString().isValidEmail()) {</span>
+<span class="nc" id="L122">                isValid = false</span>
+<span class="nc" id="L123">                toast(getString(R.string.invalid_email))</span>
+            }
+        }
+<span class="nc bnc" id="L126" title="All 8 branches missed.">        if (binding.passEt.text.isNullOrEmpty()) {</span>
+<span class="nc" id="L127">            isValid = false</span>
+<span class="nc" id="L128">            toast(getString(R.string.enter_password))</span>
+        } else {
+<span class="nc bnc" id="L130" title="All 4 branches missed.">            if (binding.passEt.text.toString().length &lt; 8) {</span>
+<span class="nc" id="L131">                isValid = false</span>
+<span class="nc" id="L132">                toast(getString(R.string.invalid_password))</span>
+            }
+        }
+<span class="nc" id="L135">        return isValid</span>
+    }
+
+    override fun onStart() {
+<span class="nc" id="L139">        super.onStart()</span>
+<span class="nc" id="L140">        viewModel.getSession { user -&gt;</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">            if (user != null) {</span>
+<span class="nc" id="L142">                UserSession.loggedInUser = user</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                dataSyncManager.startSync {</span>
+<span class="nc" id="L144">                    findNavController().navigate(</span>
+<span class="nc" id="L145">                        R.id.action_loginFragment_to_homeFragment,</span>
+<span class="nc" id="L146">                        Bundle().apply {</span>
+<span class="nc" id="L147">                            putParcelable(&quot;user&quot;, user)</span>
+<span class="nc" id="L148">                        })</span>
+<span class="nc" id="L149">                }</span>
+
+            }
+<span class="nc" id="L152">        }</span>
+<span class="nc" id="L153">    }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

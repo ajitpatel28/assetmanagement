@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "469846537920",
+    "project_id": "devicemanagement-73399",
+    "storage_bucket": "devicemanagement-73399.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:469846537920:android:ab309b47e0c2087a535f25",
+        "android_client_info": {
+          "package_name": "com.ajit.devicemanagement"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "469846537920-ki0gau77hrjhme8787qbkjoflufhtnrk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ajit.devicemanagement",
+            "certificate_hash": "b0b56583031067d439840ffb2e5494e1c9f9a9a8"
+          }
+        },
+        {
+          "client_id": "469846537920-ts748j1mgsbn7407drradn4lont5rvmt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2_dt8-xWuMNxlSXdqOtc1dUGNjARboSs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "469846537920-ts748j1mgsbn7407drradn4lont5rvmt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

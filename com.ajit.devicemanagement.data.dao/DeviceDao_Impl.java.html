@@ -1,0 +1,719 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DeviceDao_Impl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DeviceViewModelTest (1) Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.ajit.devicemanagement.data.dao</a> &gt; <span class="el_source">DeviceDao_Impl.java</span></div><h1>DeviceDao_Impl.java</h1><pre class="source lang-java linenums">package com.ajit.devicemanagement.data.dao;
+
+import android.database.Cursor;
+import android.os.CancellationSignal;
+import androidx.room.CoroutinesRoom;
+import androidx.room.EntityDeletionOrUpdateAdapter;
+import androidx.room.EntityInsertionAdapter;
+import androidx.room.RoomDatabase;
+import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
+import androidx.room.util.CursorUtil;
+import androidx.room.util.DBUtil;
+import androidx.sqlite.db.SupportSQLiteQuery;
+import androidx.sqlite.db.SupportSQLiteStatement;
+import com.ajit.devicemanagement.data.model.Change;
+import com.ajit.devicemanagement.data.model.RoomDevice;
+import com.ajit.devicemanagement.util.Operation;
+import java.lang.Class;
+import java.lang.Exception;
+import java.lang.IllegalArgumentException;
+import java.lang.Long;
+import java.lang.Object;
+import java.lang.Override;
+import java.lang.String;
+import java.lang.SuppressWarnings;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+import kotlin.Unit;
+import kotlin.coroutines.Continuation;
+
+@SuppressWarnings({&quot;unchecked&quot;, &quot;deprecation&quot;})
+public final class DeviceDao_Impl implements DeviceDao {
+  private final RoomDatabase __db;
+
+  private final EntityInsertionAdapter&lt;RoomDevice&gt; __insertionAdapterOfRoomDevice;
+
+  private final EntityInsertionAdapter&lt;Change&gt; __insertionAdapterOfChange;
+
+  private final EntityDeletionOrUpdateAdapter&lt;RoomDevice&gt; __deletionAdapterOfRoomDevice;
+
+  private final EntityDeletionOrUpdateAdapter&lt;Change&gt; __deletionAdapterOfChange;
+
+  private final EntityDeletionOrUpdateAdapter&lt;RoomDevice&gt; __updateAdapterOfRoomDevice;
+
+  private final SharedSQLiteStatement __preparedStmtOfDeleteAllDevices;
+
+  private final SharedSQLiteStatement __preparedStmtOfDeleteAllChanges;
+
+<span class="nc" id="L51">  public DeviceDao_Impl(RoomDatabase __db) {</span>
+<span class="nc" id="L52">    this.__db = __db;</span>
+<span class="nc" id="L53">    this.__insertionAdapterOfRoomDevice = new EntityInsertionAdapter&lt;RoomDevice&gt;(__db) {</span>
+      @Override
+      public String createQuery() {
+<span class="nc" id="L56">        return &quot;INSERT OR IGNORE INTO `devices` (`device_id`,`employee_id`,`device_type`,`device_name`,`model`,`manufacturer`,`identification_id`,`other_details`,`date`,`last_modified`) VALUES (?,?,?,?,?,?,?,?,?,?)&quot;;</span>
+      }
+
+      @Override
+      public void bind(SupportSQLiteStatement stmt, RoomDevice value) {
+<span class="nc bnc" id="L61" title="All 2 branches missed.">        if (value.getDeviceId() == null) {</span>
+<span class="nc" id="L62">          stmt.bindNull(1);</span>
+        } else {
+<span class="nc" id="L64">          stmt.bindString(1, value.getDeviceId());</span>
+        }
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (value.getEmployeeId() == null) {</span>
+<span class="nc" id="L67">          stmt.bindNull(2);</span>
+        } else {
+<span class="nc" id="L69">          stmt.bindString(2, value.getEmployeeId());</span>
+        }
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (value.getDeviceType() == null) {</span>
+<span class="nc" id="L72">          stmt.bindNull(3);</span>
+        } else {
+<span class="nc" id="L74">          stmt.bindString(3, value.getDeviceType());</span>
+        }
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (value.getDeviceName() == null) {</span>
+<span class="nc" id="L77">          stmt.bindNull(4);</span>
+        } else {
+<span class="nc" id="L79">          stmt.bindString(4, value.getDeviceName());</span>
+        }
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (value.getModel() == null) {</span>
+<span class="nc" id="L82">          stmt.bindNull(5);</span>
+        } else {
+<span class="nc" id="L84">          stmt.bindString(5, value.getModel());</span>
+        }
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (value.getManufacturer() == null) {</span>
+<span class="nc" id="L87">          stmt.bindNull(6);</span>
+        } else {
+<span class="nc" id="L89">          stmt.bindString(6, value.getManufacturer());</span>
+        }
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (value.getIdentificationId() == null) {</span>
+<span class="nc" id="L92">          stmt.bindNull(7);</span>
+        } else {
+<span class="nc" id="L94">          stmt.bindString(7, value.getIdentificationId());</span>
+        }
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (value.getOtherDetails() == null) {</span>
+<span class="nc" id="L97">          stmt.bindNull(8);</span>
+        } else {
+<span class="nc" id="L99">          stmt.bindString(8, value.getOtherDetails());</span>
+        }
+<span class="nc" id="L101">        stmt.bindLong(9, value.getDate());</span>
+<span class="nc" id="L102">        stmt.bindLong(10, value.getLastModified());</span>
+<span class="nc" id="L103">      }</span>
+    };
+<span class="nc" id="L105">    this.__insertionAdapterOfChange = new EntityInsertionAdapter&lt;Change&gt;(__db) {</span>
+      @Override
+      public String createQuery() {
+<span class="nc" id="L108">        return &quot;INSERT OR ABORT INTO `pending_changes` (`change_id`,`operation`,`device_id`,`employee_id`,`device_type`,`device_name`,`model`,`manufacturer`,`identification_id`,`other_details`,`date`,`last_modified`) VALUES (nullif(?, 0),?,?,?,?,?,?,?,?,?,?,?)&quot;;</span>
+      }
+
+      @Override
+      public void bind(SupportSQLiteStatement stmt, Change value) {
+<span class="nc" id="L113">        stmt.bindLong(1, value.getId());</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (value.getOperation() == null) {</span>
+<span class="nc" id="L115">          stmt.bindNull(2);</span>
+        } else {
+<span class="nc" id="L117">          stmt.bindString(2, __Operation_enumToString(value.getOperation()));</span>
+        }
+<span class="nc" id="L119">        final RoomDevice _tmpDevice = value.getDevice();</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if (_tmpDevice != null) {</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">          if (_tmpDevice.getDeviceId() == null) {</span>
+<span class="nc" id="L122">            stmt.bindNull(3);</span>
+          } else {
+<span class="nc" id="L124">            stmt.bindString(3, _tmpDevice.getDeviceId());</span>
+          }
+<span class="nc bnc" id="L126" title="All 2 branches missed.">          if (_tmpDevice.getEmployeeId() == null) {</span>
+<span class="nc" id="L127">            stmt.bindNull(4);</span>
+          } else {
+<span class="nc" id="L129">            stmt.bindString(4, _tmpDevice.getEmployeeId());</span>
+          }
+<span class="nc bnc" id="L131" title="All 2 branches missed.">          if (_tmpDevice.getDeviceType() == null) {</span>
+<span class="nc" id="L132">            stmt.bindNull(5);</span>
+          } else {
+<span class="nc" id="L134">            stmt.bindString(5, _tmpDevice.getDeviceType());</span>
+          }
+<span class="nc bnc" id="L136" title="All 2 branches missed.">          if (_tmpDevice.getDeviceName() == null) {</span>
+<span class="nc" id="L137">            stmt.bindNull(6);</span>
+          } else {
+<span class="nc" id="L139">            stmt.bindString(6, _tmpDevice.getDeviceName());</span>
+          }
+<span class="nc bnc" id="L141" title="All 2 branches missed.">          if (_tmpDevice.getModel() == null) {</span>
+<span class="nc" id="L142">            stmt.bindNull(7);</span>
+          } else {
+<span class="nc" id="L144">            stmt.bindString(7, _tmpDevice.getModel());</span>
+          }
+<span class="nc bnc" id="L146" title="All 2 branches missed.">          if (_tmpDevice.getManufacturer() == null) {</span>
+<span class="nc" id="L147">            stmt.bindNull(8);</span>
+          } else {
+<span class="nc" id="L149">            stmt.bindString(8, _tmpDevice.getManufacturer());</span>
+          }
+<span class="nc bnc" id="L151" title="All 2 branches missed.">          if (_tmpDevice.getIdentificationId() == null) {</span>
+<span class="nc" id="L152">            stmt.bindNull(9);</span>
+          } else {
+<span class="nc" id="L154">            stmt.bindString(9, _tmpDevice.getIdentificationId());</span>
+          }
+<span class="nc bnc" id="L156" title="All 2 branches missed.">          if (_tmpDevice.getOtherDetails() == null) {</span>
+<span class="nc" id="L157">            stmt.bindNull(10);</span>
+          } else {
+<span class="nc" id="L159">            stmt.bindString(10, _tmpDevice.getOtherDetails());</span>
+          }
+<span class="nc" id="L161">          stmt.bindLong(11, _tmpDevice.getDate());</span>
+<span class="nc" id="L162">          stmt.bindLong(12, _tmpDevice.getLastModified());</span>
+        } else {
+<span class="nc" id="L164">          stmt.bindNull(3);</span>
+<span class="nc" id="L165">          stmt.bindNull(4);</span>
+<span class="nc" id="L166">          stmt.bindNull(5);</span>
+<span class="nc" id="L167">          stmt.bindNull(6);</span>
+<span class="nc" id="L168">          stmt.bindNull(7);</span>
+<span class="nc" id="L169">          stmt.bindNull(8);</span>
+<span class="nc" id="L170">          stmt.bindNull(9);</span>
+<span class="nc" id="L171">          stmt.bindNull(10);</span>
+<span class="nc" id="L172">          stmt.bindNull(11);</span>
+<span class="nc" id="L173">          stmt.bindNull(12);</span>
+        }
+<span class="nc" id="L175">      }</span>
+    };
+<span class="nc" id="L177">    this.__deletionAdapterOfRoomDevice = new EntityDeletionOrUpdateAdapter&lt;RoomDevice&gt;(__db) {</span>
+      @Override
+      public String createQuery() {
+<span class="nc" id="L180">        return &quot;DELETE FROM `devices` WHERE `device_id` = ?&quot;;</span>
+      }
+
+      @Override
+      public void bind(SupportSQLiteStatement stmt, RoomDevice value) {
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        if (value.getDeviceId() == null) {</span>
+<span class="nc" id="L186">          stmt.bindNull(1);</span>
+        } else {
+<span class="nc" id="L188">          stmt.bindString(1, value.getDeviceId());</span>
+        }
+<span class="nc" id="L190">      }</span>
+    };
+<span class="nc" id="L192">    this.__deletionAdapterOfChange = new EntityDeletionOrUpdateAdapter&lt;Change&gt;(__db) {</span>
+      @Override
+      public String createQuery() {
+<span class="nc" id="L195">        return &quot;DELETE FROM `pending_changes` WHERE `change_id` = ?&quot;;</span>
+      }
+
+      @Override
+      public void bind(SupportSQLiteStatement stmt, Change value) {
+<span class="nc" id="L200">        stmt.bindLong(1, value.getId());</span>
+<span class="nc" id="L201">      }</span>
+    };
+<span class="nc" id="L203">    this.__updateAdapterOfRoomDevice = new EntityDeletionOrUpdateAdapter&lt;RoomDevice&gt;(__db) {</span>
+      @Override
+      public String createQuery() {
+<span class="nc" id="L206">        return &quot;UPDATE OR REPLACE `devices` SET `device_id` = ?,`employee_id` = ?,`device_type` = ?,`device_name` = ?,`model` = ?,`manufacturer` = ?,`identification_id` = ?,`other_details` = ?,`date` = ?,`last_modified` = ? WHERE `device_id` = ?&quot;;</span>
+      }
+
+      @Override
+      public void bind(SupportSQLiteStatement stmt, RoomDevice value) {
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        if (value.getDeviceId() == null) {</span>
+<span class="nc" id="L212">          stmt.bindNull(1);</span>
+        } else {
+<span class="nc" id="L214">          stmt.bindString(1, value.getDeviceId());</span>
+        }
+<span class="nc bnc" id="L216" title="All 2 branches missed.">        if (value.getEmployeeId() == null) {</span>
+<span class="nc" id="L217">          stmt.bindNull(2);</span>
+        } else {
+<span class="nc" id="L219">          stmt.bindString(2, value.getEmployeeId());</span>
+        }
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        if (value.getDeviceType() == null) {</span>
+<span class="nc" id="L222">          stmt.bindNull(3);</span>
+        } else {
+<span class="nc" id="L224">          stmt.bindString(3, value.getDeviceType());</span>
+        }
+<span class="nc bnc" id="L226" title="All 2 branches missed.">        if (value.getDeviceName() == null) {</span>
+<span class="nc" id="L227">          stmt.bindNull(4);</span>
+        } else {
+<span class="nc" id="L229">          stmt.bindString(4, value.getDeviceName());</span>
+        }
+<span class="nc bnc" id="L231" title="All 2 branches missed.">        if (value.getModel() == null) {</span>
+<span class="nc" id="L232">          stmt.bindNull(5);</span>
+        } else {
+<span class="nc" id="L234">          stmt.bindString(5, value.getModel());</span>
+        }
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        if (value.getManufacturer() == null) {</span>
+<span class="nc" id="L237">          stmt.bindNull(6);</span>
+        } else {
+<span class="nc" id="L239">          stmt.bindString(6, value.getManufacturer());</span>
+        }
+<span class="nc bnc" id="L241" title="All 2 branches missed.">        if (value.getIdentificationId() == null) {</span>
+<span class="nc" id="L242">          stmt.bindNull(7);</span>
+        } else {
+<span class="nc" id="L244">          stmt.bindString(7, value.getIdentificationId());</span>
+        }
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        if (value.getOtherDetails() == null) {</span>
+<span class="nc" id="L247">          stmt.bindNull(8);</span>
+        } else {
+<span class="nc" id="L249">          stmt.bindString(8, value.getOtherDetails());</span>
+        }
+<span class="nc" id="L251">        stmt.bindLong(9, value.getDate());</span>
+<span class="nc" id="L252">        stmt.bindLong(10, value.getLastModified());</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        if (value.getDeviceId() == null) {</span>
+<span class="nc" id="L254">          stmt.bindNull(11);</span>
+        } else {
+<span class="nc" id="L256">          stmt.bindString(11, value.getDeviceId());</span>
+        }
+<span class="nc" id="L258">      }</span>
+    };
+<span class="nc" id="L260">    this.__preparedStmtOfDeleteAllDevices = new SharedSQLiteStatement(__db) {</span>
+      @Override
+      public String createQuery() {
+<span class="nc" id="L263">        final String _query = &quot;DELETE FROM devices&quot;;</span>
+<span class="nc" id="L264">        return _query;</span>
+      }
+    };
+<span class="nc" id="L267">    this.__preparedStmtOfDeleteAllChanges = new SharedSQLiteStatement(__db) {</span>
+      @Override
+      public String createQuery() {
+<span class="nc" id="L270">        final String _query = &quot;DELETE FROM pending_changes&quot;;</span>
+<span class="nc" id="L271">        return _query;</span>
+      }
+    };
+<span class="nc" id="L274">  }</span>
+
+  @Override
+  public Object addDevice(final RoomDevice device, final Continuation&lt;? super Long&gt; continuation) {
+<span class="nc" id="L278">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Long&gt;() {</span>
+      @Override
+      public Long call() throws Exception {
+<span class="nc" id="L281">        __db.beginTransaction();</span>
+        try {
+<span class="nc" id="L283">          long _result = __insertionAdapterOfRoomDevice.insertAndReturnId(device);</span>
+<span class="nc" id="L284">          __db.setTransactionSuccessful();</span>
+<span class="nc" id="L285">          return _result;</span>
+        } finally {
+<span class="nc" id="L287">          __db.endTransaction();</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Object addChange(final Change deviceChange,
+      final Continuation&lt;? super Long&gt; continuation) {
+<span class="nc" id="L296">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Long&gt;() {</span>
+      @Override
+      public Long call() throws Exception {
+<span class="nc" id="L299">        __db.beginTransaction();</span>
+        try {
+<span class="nc" id="L301">          long _result = __insertionAdapterOfChange.insertAndReturnId(deviceChange);</span>
+<span class="nc" id="L302">          __db.setTransactionSuccessful();</span>
+<span class="nc" id="L303">          return _result;</span>
+        } finally {
+<span class="nc" id="L305">          __db.endTransaction();</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Object deleteDevice(final RoomDevice device,
+      final Continuation&lt;? super Unit&gt; continuation) {
+<span class="nc" id="L314">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Unit&gt;() {</span>
+      @Override
+      public Unit call() throws Exception {
+<span class="nc" id="L317">        __db.beginTransaction();</span>
+        try {
+<span class="nc" id="L319">          __deletionAdapterOfRoomDevice.handle(device);</span>
+<span class="nc" id="L320">          __db.setTransactionSuccessful();</span>
+<span class="nc" id="L321">          return Unit.INSTANCE;</span>
+        } finally {
+<span class="nc" id="L323">          __db.endTransaction();</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Object deleteChange(final Change deviceChange,
+      final Continuation&lt;? super Unit&gt; continuation) {
+<span class="nc" id="L332">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Unit&gt;() {</span>
+      @Override
+      public Unit call() throws Exception {
+<span class="nc" id="L335">        __db.beginTransaction();</span>
+        try {
+<span class="nc" id="L337">          __deletionAdapterOfChange.handle(deviceChange);</span>
+<span class="nc" id="L338">          __db.setTransactionSuccessful();</span>
+<span class="nc" id="L339">          return Unit.INSTANCE;</span>
+        } finally {
+<span class="nc" id="L341">          __db.endTransaction();</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Object updateDevice(final RoomDevice device,
+      final Continuation&lt;? super Unit&gt; continuation) {
+<span class="nc" id="L350">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Unit&gt;() {</span>
+      @Override
+      public Unit call() throws Exception {
+<span class="nc" id="L353">        __db.beginTransaction();</span>
+        try {
+<span class="nc" id="L355">          __updateAdapterOfRoomDevice.handle(device);</span>
+<span class="nc" id="L356">          __db.setTransactionSuccessful();</span>
+<span class="nc" id="L357">          return Unit.INSTANCE;</span>
+        } finally {
+<span class="nc" id="L359">          __db.endTransaction();</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Object deleteAllDevices(final Continuation&lt;? super Unit&gt; continuation) {
+<span class="nc" id="L367">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Unit&gt;() {</span>
+      @Override
+      public Unit call() throws Exception {
+<span class="nc" id="L370">        final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteAllDevices.acquire();</span>
+<span class="nc" id="L371">        __db.beginTransaction();</span>
+        try {
+<span class="nc" id="L373">          _stmt.executeUpdateDelete();</span>
+<span class="nc" id="L374">          __db.setTransactionSuccessful();</span>
+<span class="nc" id="L375">          return Unit.INSTANCE;</span>
+        } finally {
+<span class="nc" id="L377">          __db.endTransaction();</span>
+<span class="nc" id="L378">          __preparedStmtOfDeleteAllDevices.release(_stmt);</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Object deleteAllChanges(final Continuation&lt;? super Unit&gt; continuation) {
+<span class="nc" id="L386">    return CoroutinesRoom.execute(__db, true, new Callable&lt;Unit&gt;() {</span>
+      @Override
+      public Unit call() throws Exception {
+<span class="nc" id="L389">        final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteAllChanges.acquire();</span>
+<span class="nc" id="L390">        __db.beginTransaction();</span>
+        try {
+<span class="nc" id="L392">          _stmt.executeUpdateDelete();</span>
+<span class="nc" id="L393">          __db.setTransactionSuccessful();</span>
+<span class="nc" id="L394">          return Unit.INSTANCE;</span>
+        } finally {
+<span class="nc" id="L396">          __db.endTransaction();</span>
+<span class="nc" id="L397">          __preparedStmtOfDeleteAllChanges.release(_stmt);</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Object getDevices(final Continuation&lt;? super List&lt;RoomDevice&gt;&gt; continuation) {
+<span class="nc" id="L405">    final String _sql = &quot;SELECT * FROM devices&quot;;</span>
+<span class="nc" id="L406">    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);</span>
+<span class="nc" id="L407">    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();</span>
+<span class="nc" id="L408">    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable&lt;List&lt;RoomDevice&gt;&gt;() {</span>
+      @Override
+      public List&lt;RoomDevice&gt; call() throws Exception {
+<span class="nc" id="L411">        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);</span>
+        try {
+<span class="nc" id="L413">          final int _cursorIndexOfDeviceId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;device_id&quot;);</span>
+<span class="nc" id="L414">          final int _cursorIndexOfEmployeeId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;employee_id&quot;);</span>
+<span class="nc" id="L415">          final int _cursorIndexOfDeviceType = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;device_type&quot;);</span>
+<span class="nc" id="L416">          final int _cursorIndexOfDeviceName = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;device_name&quot;);</span>
+<span class="nc" id="L417">          final int _cursorIndexOfModel = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;model&quot;);</span>
+<span class="nc" id="L418">          final int _cursorIndexOfManufacturer = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;manufacturer&quot;);</span>
+<span class="nc" id="L419">          final int _cursorIndexOfIdentificationId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;identification_id&quot;);</span>
+<span class="nc" id="L420">          final int _cursorIndexOfOtherDetails = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;other_details&quot;);</span>
+<span class="nc" id="L421">          final int _cursorIndexOfDate = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;date&quot;);</span>
+<span class="nc" id="L422">          final int _cursorIndexOfLastModified = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;last_modified&quot;);</span>
+<span class="nc" id="L423">          final List&lt;RoomDevice&gt; _result = new ArrayList&lt;RoomDevice&gt;(_cursor.getCount());</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">          while(_cursor.moveToNext()) {</span>
+            final RoomDevice _item;
+            final String _tmpDeviceId;
+<span class="nc bnc" id="L427" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfDeviceId)) {</span>
+<span class="nc" id="L428">              _tmpDeviceId = null;</span>
+            } else {
+<span class="nc" id="L430">              _tmpDeviceId = _cursor.getString(_cursorIndexOfDeviceId);</span>
+            }
+            final String _tmpEmployeeId;
+<span class="nc bnc" id="L433" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfEmployeeId)) {</span>
+<span class="nc" id="L434">              _tmpEmployeeId = null;</span>
+            } else {
+<span class="nc" id="L436">              _tmpEmployeeId = _cursor.getString(_cursorIndexOfEmployeeId);</span>
+            }
+            final String _tmpDeviceType;
+<span class="nc bnc" id="L439" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfDeviceType)) {</span>
+<span class="nc" id="L440">              _tmpDeviceType = null;</span>
+            } else {
+<span class="nc" id="L442">              _tmpDeviceType = _cursor.getString(_cursorIndexOfDeviceType);</span>
+            }
+            final String _tmpDeviceName;
+<span class="nc bnc" id="L445" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfDeviceName)) {</span>
+<span class="nc" id="L446">              _tmpDeviceName = null;</span>
+            } else {
+<span class="nc" id="L448">              _tmpDeviceName = _cursor.getString(_cursorIndexOfDeviceName);</span>
+            }
+            final String _tmpModel;
+<span class="nc bnc" id="L451" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfModel)) {</span>
+<span class="nc" id="L452">              _tmpModel = null;</span>
+            } else {
+<span class="nc" id="L454">              _tmpModel = _cursor.getString(_cursorIndexOfModel);</span>
+            }
+            final String _tmpManufacturer;
+<span class="nc bnc" id="L457" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfManufacturer)) {</span>
+<span class="nc" id="L458">              _tmpManufacturer = null;</span>
+            } else {
+<span class="nc" id="L460">              _tmpManufacturer = _cursor.getString(_cursorIndexOfManufacturer);</span>
+            }
+            final String _tmpIdentificationId;
+<span class="nc bnc" id="L463" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfIdentificationId)) {</span>
+<span class="nc" id="L464">              _tmpIdentificationId = null;</span>
+            } else {
+<span class="nc" id="L466">              _tmpIdentificationId = _cursor.getString(_cursorIndexOfIdentificationId);</span>
+            }
+            final String _tmpOtherDetails;
+<span class="nc bnc" id="L469" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfOtherDetails)) {</span>
+<span class="nc" id="L470">              _tmpOtherDetails = null;</span>
+            } else {
+<span class="nc" id="L472">              _tmpOtherDetails = _cursor.getString(_cursorIndexOfOtherDetails);</span>
+            }
+            final long _tmpDate;
+<span class="nc" id="L475">            _tmpDate = _cursor.getLong(_cursorIndexOfDate);</span>
+            final long _tmpLastModified;
+<span class="nc" id="L477">            _tmpLastModified = _cursor.getLong(_cursorIndexOfLastModified);</span>
+<span class="nc" id="L478">            _item = new RoomDevice(_tmpDeviceId,_tmpEmployeeId,_tmpDeviceType,_tmpDeviceName,_tmpModel,_tmpManufacturer,_tmpIdentificationId,_tmpOtherDetails,_tmpDate,_tmpLastModified);</span>
+<span class="nc" id="L479">            _result.add(_item);</span>
+<span class="nc" id="L480">          }</span>
+<span class="nc" id="L481">          return _result;</span>
+        } finally {
+<span class="nc" id="L483">          _cursor.close();</span>
+<span class="nc" id="L484">          _statement.release();</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Object getDeviceByDeviceId(final String deviceId,
+      final Continuation&lt;? super RoomDevice&gt; continuation) {
+<span class="nc" id="L493">    final String _sql = &quot;SELECT * FROM devices WHERE device_id = ?&quot;;</span>
+<span class="nc" id="L494">    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);</span>
+<span class="nc" id="L495">    int _argIndex = 1;</span>
+<span class="nc bnc" id="L496" title="All 2 branches missed.">    if (deviceId == null) {</span>
+<span class="nc" id="L497">      _statement.bindNull(_argIndex);</span>
+    } else {
+<span class="nc" id="L499">      _statement.bindString(_argIndex, deviceId);</span>
+    }
+<span class="nc" id="L501">    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();</span>
+<span class="nc" id="L502">    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable&lt;RoomDevice&gt;() {</span>
+      @Override
+      public RoomDevice call() throws Exception {
+<span class="nc" id="L505">        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);</span>
+        try {
+<span class="nc" id="L507">          final int _cursorIndexOfDeviceId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;device_id&quot;);</span>
+<span class="nc" id="L508">          final int _cursorIndexOfEmployeeId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;employee_id&quot;);</span>
+<span class="nc" id="L509">          final int _cursorIndexOfDeviceType = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;device_type&quot;);</span>
+<span class="nc" id="L510">          final int _cursorIndexOfDeviceName = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;device_name&quot;);</span>
+<span class="nc" id="L511">          final int _cursorIndexOfModel = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;model&quot;);</span>
+<span class="nc" id="L512">          final int _cursorIndexOfManufacturer = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;manufacturer&quot;);</span>
+<span class="nc" id="L513">          final int _cursorIndexOfIdentificationId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;identification_id&quot;);</span>
+<span class="nc" id="L514">          final int _cursorIndexOfOtherDetails = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;other_details&quot;);</span>
+<span class="nc" id="L515">          final int _cursorIndexOfDate = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;date&quot;);</span>
+<span class="nc" id="L516">          final int _cursorIndexOfLastModified = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;last_modified&quot;);</span>
+          final RoomDevice _result;
+<span class="nc bnc" id="L518" title="All 2 branches missed.">          if(_cursor.moveToFirst()) {</span>
+            final String _tmpDeviceId;
+<span class="nc bnc" id="L520" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfDeviceId)) {</span>
+<span class="nc" id="L521">              _tmpDeviceId = null;</span>
+            } else {
+<span class="nc" id="L523">              _tmpDeviceId = _cursor.getString(_cursorIndexOfDeviceId);</span>
+            }
+            final String _tmpEmployeeId;
+<span class="nc bnc" id="L526" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfEmployeeId)) {</span>
+<span class="nc" id="L527">              _tmpEmployeeId = null;</span>
+            } else {
+<span class="nc" id="L529">              _tmpEmployeeId = _cursor.getString(_cursorIndexOfEmployeeId);</span>
+            }
+            final String _tmpDeviceType;
+<span class="nc bnc" id="L532" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfDeviceType)) {</span>
+<span class="nc" id="L533">              _tmpDeviceType = null;</span>
+            } else {
+<span class="nc" id="L535">              _tmpDeviceType = _cursor.getString(_cursorIndexOfDeviceType);</span>
+            }
+            final String _tmpDeviceName;
+<span class="nc bnc" id="L538" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfDeviceName)) {</span>
+<span class="nc" id="L539">              _tmpDeviceName = null;</span>
+            } else {
+<span class="nc" id="L541">              _tmpDeviceName = _cursor.getString(_cursorIndexOfDeviceName);</span>
+            }
+            final String _tmpModel;
+<span class="nc bnc" id="L544" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfModel)) {</span>
+<span class="nc" id="L545">              _tmpModel = null;</span>
+            } else {
+<span class="nc" id="L547">              _tmpModel = _cursor.getString(_cursorIndexOfModel);</span>
+            }
+            final String _tmpManufacturer;
+<span class="nc bnc" id="L550" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfManufacturer)) {</span>
+<span class="nc" id="L551">              _tmpManufacturer = null;</span>
+            } else {
+<span class="nc" id="L553">              _tmpManufacturer = _cursor.getString(_cursorIndexOfManufacturer);</span>
+            }
+            final String _tmpIdentificationId;
+<span class="nc bnc" id="L556" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfIdentificationId)) {</span>
+<span class="nc" id="L557">              _tmpIdentificationId = null;</span>
+            } else {
+<span class="nc" id="L559">              _tmpIdentificationId = _cursor.getString(_cursorIndexOfIdentificationId);</span>
+            }
+            final String _tmpOtherDetails;
+<span class="nc bnc" id="L562" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfOtherDetails)) {</span>
+<span class="nc" id="L563">              _tmpOtherDetails = null;</span>
+            } else {
+<span class="nc" id="L565">              _tmpOtherDetails = _cursor.getString(_cursorIndexOfOtherDetails);</span>
+            }
+            final long _tmpDate;
+<span class="nc" id="L568">            _tmpDate = _cursor.getLong(_cursorIndexOfDate);</span>
+            final long _tmpLastModified;
+<span class="nc" id="L570">            _tmpLastModified = _cursor.getLong(_cursorIndexOfLastModified);</span>
+<span class="nc" id="L571">            _result = new RoomDevice(_tmpDeviceId,_tmpEmployeeId,_tmpDeviceType,_tmpDeviceName,_tmpModel,_tmpManufacturer,_tmpIdentificationId,_tmpOtherDetails,_tmpDate,_tmpLastModified);</span>
+<span class="nc" id="L572">          } else {</span>
+<span class="nc" id="L573">            _result = null;</span>
+          }
+<span class="nc" id="L575">          return _result;</span>
+        } finally {
+<span class="nc" id="L577">          _cursor.close();</span>
+<span class="nc" id="L578">          _statement.release();</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Object getAllPendingChanges(final Continuation&lt;? super List&lt;Change&gt;&gt; continuation) {
+<span class="nc" id="L586">    final String _sql = &quot;SELECT * FROM pending_changes&quot;;</span>
+<span class="nc" id="L587">    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);</span>
+<span class="nc" id="L588">    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();</span>
+<span class="nc" id="L589">    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable&lt;List&lt;Change&gt;&gt;() {</span>
+      @Override
+      public List&lt;Change&gt; call() throws Exception {
+<span class="nc" id="L592">        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);</span>
+        try {
+<span class="nc" id="L594">          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;change_id&quot;);</span>
+<span class="nc" id="L595">          final int _cursorIndexOfOperation = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;operation&quot;);</span>
+<span class="nc" id="L596">          final int _cursorIndexOfDeviceId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;device_id&quot;);</span>
+<span class="nc" id="L597">          final int _cursorIndexOfEmployeeId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;employee_id&quot;);</span>
+<span class="nc" id="L598">          final int _cursorIndexOfDeviceType = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;device_type&quot;);</span>
+<span class="nc" id="L599">          final int _cursorIndexOfDeviceName = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;device_name&quot;);</span>
+<span class="nc" id="L600">          final int _cursorIndexOfModel = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;model&quot;);</span>
+<span class="nc" id="L601">          final int _cursorIndexOfManufacturer = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;manufacturer&quot;);</span>
+<span class="nc" id="L602">          final int _cursorIndexOfIdentificationId = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;identification_id&quot;);</span>
+<span class="nc" id="L603">          final int _cursorIndexOfOtherDetails = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;other_details&quot;);</span>
+<span class="nc" id="L604">          final int _cursorIndexOfDate = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;date&quot;);</span>
+<span class="nc" id="L605">          final int _cursorIndexOfLastModified = CursorUtil.getColumnIndexOrThrow(_cursor, &quot;last_modified&quot;);</span>
+<span class="nc" id="L606">          final List&lt;Change&gt; _result = new ArrayList&lt;Change&gt;(_cursor.getCount());</span>
+<span class="nc bnc" id="L607" title="All 2 branches missed.">          while(_cursor.moveToNext()) {</span>
+            final Change _item;
+            final long _tmpId;
+<span class="nc" id="L610">            _tmpId = _cursor.getLong(_cursorIndexOfId);</span>
+            final Operation _tmpOperation;
+<span class="nc" id="L612">            _tmpOperation = __Operation_stringToEnum(_cursor.getString(_cursorIndexOfOperation));</span>
+            final RoomDevice _tmpDevice;
+            final String _tmpDeviceId;
+<span class="nc bnc" id="L615" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfDeviceId)) {</span>
+<span class="nc" id="L616">              _tmpDeviceId = null;</span>
+            } else {
+<span class="nc" id="L618">              _tmpDeviceId = _cursor.getString(_cursorIndexOfDeviceId);</span>
+            }
+            final String _tmpEmployeeId;
+<span class="nc bnc" id="L621" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfEmployeeId)) {</span>
+<span class="nc" id="L622">              _tmpEmployeeId = null;</span>
+            } else {
+<span class="nc" id="L624">              _tmpEmployeeId = _cursor.getString(_cursorIndexOfEmployeeId);</span>
+            }
+            final String _tmpDeviceType;
+<span class="nc bnc" id="L627" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfDeviceType)) {</span>
+<span class="nc" id="L628">              _tmpDeviceType = null;</span>
+            } else {
+<span class="nc" id="L630">              _tmpDeviceType = _cursor.getString(_cursorIndexOfDeviceType);</span>
+            }
+            final String _tmpDeviceName;
+<span class="nc bnc" id="L633" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfDeviceName)) {</span>
+<span class="nc" id="L634">              _tmpDeviceName = null;</span>
+            } else {
+<span class="nc" id="L636">              _tmpDeviceName = _cursor.getString(_cursorIndexOfDeviceName);</span>
+            }
+            final String _tmpModel;
+<span class="nc bnc" id="L639" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfModel)) {</span>
+<span class="nc" id="L640">              _tmpModel = null;</span>
+            } else {
+<span class="nc" id="L642">              _tmpModel = _cursor.getString(_cursorIndexOfModel);</span>
+            }
+            final String _tmpManufacturer;
+<span class="nc bnc" id="L645" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfManufacturer)) {</span>
+<span class="nc" id="L646">              _tmpManufacturer = null;</span>
+            } else {
+<span class="nc" id="L648">              _tmpManufacturer = _cursor.getString(_cursorIndexOfManufacturer);</span>
+            }
+            final String _tmpIdentificationId;
+<span class="nc bnc" id="L651" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfIdentificationId)) {</span>
+<span class="nc" id="L652">              _tmpIdentificationId = null;</span>
+            } else {
+<span class="nc" id="L654">              _tmpIdentificationId = _cursor.getString(_cursorIndexOfIdentificationId);</span>
+            }
+            final String _tmpOtherDetails;
+<span class="nc bnc" id="L657" title="All 2 branches missed.">            if (_cursor.isNull(_cursorIndexOfOtherDetails)) {</span>
+<span class="nc" id="L658">              _tmpOtherDetails = null;</span>
+            } else {
+<span class="nc" id="L660">              _tmpOtherDetails = _cursor.getString(_cursorIndexOfOtherDetails);</span>
+            }
+            final long _tmpDate;
+<span class="nc" id="L663">            _tmpDate = _cursor.getLong(_cursorIndexOfDate);</span>
+            final long _tmpLastModified;
+<span class="nc" id="L665">            _tmpLastModified = _cursor.getLong(_cursorIndexOfLastModified);</span>
+<span class="nc" id="L666">            _tmpDevice = new RoomDevice(_tmpDeviceId,_tmpEmployeeId,_tmpDeviceType,_tmpDeviceName,_tmpModel,_tmpManufacturer,_tmpIdentificationId,_tmpOtherDetails,_tmpDate,_tmpLastModified);</span>
+<span class="nc" id="L667">            _item = new Change(_tmpId,_tmpOperation,_tmpDevice);</span>
+<span class="nc" id="L668">            _result.add(_item);</span>
+<span class="nc" id="L669">          }</span>
+<span class="nc" id="L670">          return _result;</span>
+        } finally {
+<span class="nc" id="L672">          _cursor.close();</span>
+<span class="nc" id="L673">          _statement.release();</span>
+        }
+      }
+    }, continuation);
+  }
+
+  @Override
+  public Cursor getDevicesCursor(final SupportSQLiteQuery query) {
+<span class="nc" id="L681">    final SupportSQLiteQuery _internalQuery = query;</span>
+<span class="nc" id="L682">    final Cursor _tmpResult = __db.query(_internalQuery);</span>
+<span class="nc" id="L683">    return _tmpResult;</span>
+  }
+
+  @Override
+  public Cursor getChangesCursor(final SupportSQLiteQuery query) {
+<span class="nc" id="L688">    final SupportSQLiteQuery _internalQuery = query;</span>
+<span class="nc" id="L689">    final Cursor _tmpResult = __db.query(_internalQuery);</span>
+<span class="nc" id="L690">    return _tmpResult;</span>
+  }
+
+  public static List&lt;Class&lt;?&gt;&gt; getRequiredConverters() {
+<span class="nc" id="L694">    return Collections.emptyList();</span>
+  }
+
+  private String __Operation_enumToString(final Operation _value) {
+<span class="nc bnc" id="L698" title="All 2 branches missed.">    if (_value == null) {</span>
+<span class="nc" id="L699">      return null;</span>
+<span class="nc bnc" id="L700" title="All 4 branches missed.">    } switch (_value) {</span>
+<span class="nc" id="L701">      case INSERT: return &quot;INSERT&quot;;</span>
+<span class="nc" id="L702">      case UPDATE: return &quot;UPDATE&quot;;</span>
+<span class="nc" id="L703">      case DELETE: return &quot;DELETE&quot;;</span>
+<span class="nc" id="L704">      default: throw new IllegalArgumentException(&quot;Can't convert enum to string, unknown enum value: &quot; + _value);</span>
+    }
+  }
+
+  private Operation __Operation_stringToEnum(final String _value) {
+<span class="nc bnc" id="L709" title="All 2 branches missed.">    if (_value == null) {</span>
+<span class="nc" id="L710">      return null;</span>
+<span class="nc bnc" id="L711" title="All 4 branches missed.">    } switch (_value) {</span>
+<span class="nc" id="L712">      case &quot;INSERT&quot;: return Operation.INSERT;</span>
+<span class="nc" id="L713">      case &quot;UPDATE&quot;: return Operation.UPDATE;</span>
+<span class="nc" id="L714">      case &quot;DELETE&quot;: return Operation.DELETE;</span>
+<span class="nc" id="L715">      default: throw new IllegalArgumentException(&quot;Can't convert value to enum, unknown value: &quot; + _value);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

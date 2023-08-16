@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RepositoryModule.kt</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">DeviceViewModelTest (1) Coverage Results</a> &gt; <a href="index.source.html" class="el_package">com.ajit.devicemanagement.di</a> &gt; <span class="el_source">RepositoryModule.kt</span></div><h1>RepositoryModule.kt</h1><pre class="source lang-java linenums">package com.ajit.devicemanagement.di
+
+import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
+import com.ajit.devicemanagement.data.dao.DeviceDao
+import com.ajit.devicemanagement.data.repository.AuthRepository
+import com.ajit.devicemanagement.data.repository.AuthRepositoryImpl
+import com.ajit.devicemanagement.data.repository.DeviceRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.Gson
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+
+@InstallIn(SingletonComponent::class)
+@Module
+object RepositoryModule {
+
+
+    @Provides
+    @Singleton
+    fun provideContext(application: Application): Context {
+<span class="nc" id="L29">        return application.applicationContext</span>
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideDeviceRepository(deviceDao: DeviceDao): DeviceRepository {
+<span class="nc" id="L36">        return DeviceRepository(deviceDao)</span>
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideAuthRepository(
+        database: FirebaseFirestore,
+        auth: FirebaseAuth,
+        appPreferences: SharedPreferences,
+        gson: Gson
+    ): AuthRepository {
+<span class="nc" id="L48">        return AuthRepositoryImpl(auth, database, appPreferences, gson)</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.7.202105040129</span></div></body></html>

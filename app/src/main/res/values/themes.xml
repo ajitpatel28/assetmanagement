@@ -1,0 +1,69 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.Devicemanagement" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/purple_200</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/light_blue</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/purple_200</item>
+        <item name="android:textColorHint">@color/grey</item>
+        <item name="android:navigationBarColor">@color/purple_200</item>
+
+        <item name="cardBackgroundColor">@color/white</item>
+
+        <item name="editTextBackground">@color/colorEditText</item>
+        <item name="editTextStrokeColor" />
+
+
+
+
+        <!-- Customize your theme here. -->
+    </style>
+
+
+
+    <style name="CircularImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+
+
+
+    <style name="TextInputLayout.NoBox" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <!-- Customize other attributes as needed -->
+        <item name="boxBackgroundMode">none</item>
+        <item name="boxStrokeWidth">0dp</item>
+    </style>
+
+
+    <!-- No usage -->
+    <style name="SubTitleStyle">
+        <item name="android:fontFamily">@font/titillium_web_bold</item>
+        <item name="android:textSize">16dp</item>
+    </style>
+
+    <style name="TitleStyle">
+        <item name="android:fontFamily">@font/titillium_web_bold</item>
+        <item name="android:textSize">18dp</item>
+    </style>
+
+    <style name="TextStyle">
+        <item name="android:fontFamily">@font/titillium_web_regular</item>
+        <item name="android:textSize">14dp</item>
+    </style>
+
+
+
+    <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:textColor">@color/colorBlack</item>
+        <item name="android:textColorHint">@color/colorPlaceholder</item>
+
+    </style>
+</resources>
